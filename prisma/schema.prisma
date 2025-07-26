@@ -1,0 +1,273 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Model untuk Pengguna
+// Tambahkan ENUM baru untuk pilar TJSL
+enum TjslPillar {
+  PENDIDIKAN
+  LINGKUNGAN
+  PENGEMBANGAN_UMK
+  SOSIAL_BUDAYA
+}
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  name            String?
+  image     String? // Field untuk menyimpan gambar profil (sebagai Base64)
+  password        String // Akan di-hash
+  role            Role              @default(USER)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  ProgramProposal ProgramProposal[]
+  
+  // Tambahkan relasi untuk program yang dia tangani
+  programDitangani  Program[]
+  
+  // Tambahkan relasi untuk laporan yang dibuat
+  laporanDibuat     LaporanProgres[]
+  
+  // Tambahkan relasi untuk dokumen yang diupload
+  dokumenDiupload   DokumenProgram[]
+  
+  // Tambahkan relasi untuk AI Settings
+  aiApiKeys         AIApiKey[]
+  aiPrompts         AIPrompt[]
+}
+
+// Model ProgramProposal yang sudah disempurnakan
+model ProgramProposal {
+  id             String   @id @default(cuid())
+  
+  // --- INFORMASI DASAR ---
+  judul          String
+  pilar          TjslPillar
+  ringkasan      String?  @db.Text
+  lokasiKabupaten String
+  lokasiKecamatan String
+  lokasiDesa     String?
+
+  // --- JUSTIFIKASI & DETAIL ---
+  latarBelakang  String   @db.Text
+  tujuanProgram  String   @db.Text
+  indikatorKeberhasilan String @db.Text // Simpan sebagai list poin-poin
+  
+  // --- TARGET ---
+  targetPenerimaManfaat String @db.Text
+  jumlahPenerimaManfaat Int
+
+  // --- ANGGARAN & JADWAL ---
+  estimasiAnggaran      Decimal @db.Decimal(15, 2) // Total 15 digit, 2 di belakang koma
+  perkiraanMulai        DateTime
+  perkiraanSelesai      DateTime
+
+  // --- METADATA ---
+  status         ProposalStatus @default(DRAFT)
+  createdBy      User     @relation(fields: [createdById], references: [id])
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Tambahkan relasi balik ke Program
+  program           Program?
+}
+
+// MODEL BARU UNTUK PROGRAM RESMI
+model Program {
+  id             String   @id @default(cuid())
+  
+  // Data yang disalin dari Proposal
+  judul          String
+  pilar          TjslPillar
+  lokasiKabupaten String
+  lokasiKecamatan String
+  latarBelakang  String   @db.Text
+  tujuanProgram  String   @db.Text
+  indikatorKeberhasilan String @db.Text
+  targetPenerimaManfaat String @db.Text
+  jumlahPenerimaManfaat Int
+
+  // Data final yang diisi saat konversi
+  anggaranFinal         Decimal @db.Decimal(15, 2)
+  tanggalMulaiFinal     DateTime
+  tanggalSelesaiFinal   DateTime
+  
+  // Relasi ke Penanggung Jawab
+  penanggungJawab   User     @relation(fields: [penanggungJawabId], references: [id])
+  penanggungJawabId String
+
+  // Status Program
+  status            ProgramStatus @default(BERJALAN)
+
+  // Jejak ke Proposal Asal (Traceability)
+  proposalAsal      ProgramProposal @relation(fields: [proposalAsalId], references: [id])
+  proposalAsalId    String          @unique // Satu proposal hanya bisa jadi satu program
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Tambahkan relasi untuk laporan progres
+  laporanProgres    LaporanProgres[]
+  
+  // Tambahkan relasi untuk dokumen penting
+  dokumenPenting    DokumenProgram[]
+}
+
+// Model baru untuk Laporan Progres
+model LaporanProgres {
+  id          String      @id @default(cuid())
+  tipeLaporan LaporanType
+  
+  // Data laporan yang fleksibel
+  data        Json
+  
+  // Relasi ke program terkait
+  program     Program     @relation(fields: [programId], references: [id])
+  programId   String
+
+  // Relasi ke user yang melapor
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdById String
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// Enum untuk Peran Pengguna
+enum Role {
+  ADMIN
+  USER
+}
+
+// Enum untuk Status Proposal
+enum ProposalStatus {
+  DRAFT
+  DIAJUKAN
+  DISETUJUI
+  DITOLAK
+  DIJALANKAN // <-- STATUS BARU
+  SELESAI
+}
+
+// Tambahkan enum baru untuk status program yang sedang berjalan
+enum ProgramStatus {
+  BERJALAN
+  SELESAI
+  DITUNDA
+  DIBATALKAN
+}
+
+// Enum untuk jenis laporan
+enum LaporanType {
+  PROGRES_RUTIN
+  PENCAPAIAN_MILESTONE
+  KEUANGAN
+  INSIDEN_KENDALA
+  KEGIATAN_KHUSUS
+}
+
+// Enum untuk tipe dokumen
+enum DokumenType {
+  MoU
+  PKS
+  SURAT_RESMI
+  DOKUMENTASI
+  LAINNYA
+}
+
+// Model untuk dokumen program
+model DokumenProgram {
+  id           String      @id @default(cuid())
+  namaDokumen  String
+  tipeDokumen  DokumenType
+
+  // Tipe file untuk header download, cth: 'application/pdf'
+  mimeType     String      
+  // Konten file yang sudah di-encode ke Base64
+  fileContent  String      @db.Text 
+
+  program      Program     @relation(fields: [programId], references: [id])
+  programId    String
+
+  uploadedBy   User        @relation(fields: [uploadedById], references: [id])
+  uploadedById String
+
+  createdAt    DateTime    @default(now())
+}
+
+// Model untuk AI API Keys
+model AIApiKey {
+  id          String      @id @default(cuid())
+  name        String      // Nama untuk identifikasi, misal: "OpenAI GPT-4"
+  provider    AIProvider  // Provider AI (OpenAI, Anthropic, dll)
+  apiKey      String      // API Key yang di-encrypt
+  baseUrl     String?     // Base URL untuk custom endpoints
+  isActive    Boolean     @default(true)
+  
+  // Model yang tersedia dari API Key ini
+  availableModels String[] // Array model yang bisa digunakan
+  
+  // Metadata
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relasi ke prompts yang menggunakan API key ini
+  prompts     AIPrompt[]
+}
+
+// Model untuk AI Prompts
+model AIPrompt {
+  id          String      @id @default(cuid())
+  name        String      // Nama prompt, misal: "Analisis Proposal CSR"
+  description String?     @db.Text // Deskripsi fungsi prompt
+  
+  // Prompt content
+  systemPrompt String     @db.Text // System prompt
+  userPrompt   String     @db.Text // User prompt template
+  
+  // AI Configuration
+  apiKey      AIApiKey    @relation(fields: [apiKeyId], references: [id])
+  apiKeyId    String
+  model       String      // Model yang digunakan (harus ada di availableModels)
+  
+  // Parameters
+  temperature Float       @default(0.7)
+  maxTokens   Int         @default(1000)
+  
+  // Metadata
+  category    PromptCategory @default(GENERAL)
+  isActive    Boolean     @default(true)
+  
+  createdBy   User        @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// Enum untuk AI Providers
+enum AIProvider {
+  OPENAI
+  ANTHROPIC
+  GOOGLE
+  COHERE
+  CUSTOM
+}
+
+// Enum untuk kategori prompt
+enum PromptCategory {
+  GENERAL
+  PROPOSAL_ANALYSIS
+  REPORT_GENERATION
+  DATA_INSIGHTS
+  DOCUMENT_SUMMARY
+}
