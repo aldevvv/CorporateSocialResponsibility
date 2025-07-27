@@ -1,6 +1,6 @@
 // app/dashboard/programs/[id]/create-report/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -28,13 +28,14 @@ async function getProgram(id: string) {
   return program;
 }
 
-export default async function CreateReportPage({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
+export default async function CreateReportPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions) as { user: { id: string } } | null;
   if (!session?.user) {
     redirect('/login');
   }
 
-  const program = await getProgram(params.id);
+  const { id } = await params;
+  const program = await getProgram(id);
 
   if (!program) {
     notFound();
@@ -100,7 +101,7 @@ export default async function CreateReportPage({ params }: { params: { id: strin
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href={`/dashboard/programs/${params.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+                  <Link href={`/dashboard/programs/${id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
                     {program.judul}
                   </Link>
                 </BreadcrumbLink>
