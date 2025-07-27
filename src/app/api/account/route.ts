@@ -54,11 +54,18 @@ export async function PATCH(request: Request) {
       data: dataToUpdate,
     });
     // Hapus data sensitif dari respons
-    const { password, ...result } = updatedUser;
+    const { password: _, ...result } = updatedUser;
     return NextResponse.json(result);
   } catch (error) {
+interface PrismaError extends Error {
+  code?: string;
+  meta?: { target?: string[] };
+}
+
     // Tangani error jika email baru sudah terdaftar
-    if ((error as any).code === 'P2002' && (error as any).meta?.target?.includes('email')) {
+    const prismaError = error as PrismaError;
+    if (prismaError.code === 'P2002' && 
+        prismaError.meta?.target?.includes('email')) {
         return NextResponse.json({ error: 'Email ini sudah digunakan oleh akun lain.' }, { status: 409 });
     }
     // Tangani error umum lainnya

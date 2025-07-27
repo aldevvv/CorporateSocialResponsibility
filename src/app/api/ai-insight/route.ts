@@ -103,7 +103,7 @@ async function logAIUsage(
         promptId,
         apiKeyId,
         model,
-        provider: validProvider as any, // Cast to enum
+        provider: validProvider as 'OPENAI' | 'GOOGLE' | 'ANTHROPIC', // Cast to enum
         userId,
         userAgent,
         ipAddress,
@@ -123,7 +123,18 @@ async function logAIUsage(
 
 export async function POST(req: Request) {
   const startTime = Date.now();
-  let activePrompt: any = null;
+  let activePrompt: {
+    id: string;
+    systemPrompt: string;
+    userPrompt: string;
+    model: string;
+    temperature: number;
+    maxTokens: number;
+    apiKey: {
+      provider: string;
+      apiKey: string;
+    };
+  } | null;
   let userId: string | null = null;
   
   try {
@@ -237,14 +248,14 @@ export async function POST(req: Request) {
         
         try {
           if (activePrompt.apiKey.provider === 'GOOGLE') {
-            const googleResponse = aiResponse as any;
+            const googleResponse = aiResponse as { stream: AsyncIterable<{ text(): string }> };
             for await (const chunk of googleResponse.stream) {
               const text = chunk.text();
               totalResponseText += text;
               controller.enqueue(encoder.encode(text));
             }
           } else if (activePrompt.apiKey.provider === 'OPENAI') {
-            const openaiResponse = aiResponse as any;
+            const openaiResponse = aiResponse as AsyncIterable<{ choices: Array<{ delta?: { content?: string } }> }>;
             for await (const chunk of openaiResponse) {
               const text = chunk.choices[0]?.delta?.content || '';
               if (text) {
@@ -253,7 +264,7 @@ export async function POST(req: Request) {
               }
             }
           } else if (activePrompt.apiKey.provider === 'ANTHROPIC') {
-            const anthropicResponse = aiResponse as any;
+            const anthropicResponse = aiResponse as AsyncIterable<{ type: string; delta?: { text?: string } }>;
             for await (const chunk of anthropicResponse) {
               if (chunk.type === 'content_block_delta') {
                 const text = chunk.delta.text || '';

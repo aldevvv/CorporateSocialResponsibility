@@ -97,7 +97,7 @@ export default function AdminGuidePage() {
         
         <h2>2. Siklus Hidup Proposal (Tahap 1)</h2>
         
-        <p>Ini adalah alur kerja utama untuk mengelola usulan program dari ide hingga persetujuan. Semua ini terjadi di menu <strong>"Manajemen Proposal"</strong>.</p>
+        <p>Ini adalah alur kerja utama untuk mengelola usulan program dari ide hingga persetujuan. Semua ini terjadi di menu <strong>&quot;Manajemen Proposal&quot;</strong>.</p>
         
         <h3>Langkah 1: Membuat Proposal Baru</h3>
         <ol>

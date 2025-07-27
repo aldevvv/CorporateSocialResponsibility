@@ -1,4 +1,5 @@
 // app/contact/page.tsx
+import Link from 'next/link';
 import { PublicNavbar } from '@/components/PublicNavbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { 
@@ -424,18 +425,18 @@ export default function ContactPage() {
               <div className="lg:col-span-1">
                 <h3 className="text-white font-bold text-lg mb-6">Navigasi</h3>
                 <div className="space-y-4">
-                  <a href="/" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
+                  <Link href="/" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
                     Beranda
-                  </a>
-                  <a href="/programs" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
+                  </Link>
+                  <Link href="/programs" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
                     Program Kami
-                  </a>
-                  <a href="/about" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
+                  </Link>
+                  <Link href="/about" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
                     Tentang TJSL
-                  </a>
-                  <a href="/contact" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
+                  </Link>
+                  <Link href="/contact" className="block text-blue-100 hover:text-[#FCD34D] transition-colors duration-300 text-sm">
                     Kontak
-                  </a>
+                  </Link>
                 </div>
               </div>
               

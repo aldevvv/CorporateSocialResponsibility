@@ -1,82 +1,267 @@
-Kita akan mengubah logika api/documents/route.ts agar mengunggah file ke Supabase Storage, lalu menyimpan URL-nya ke database Prisma (PostgreSQL).
+root@ubuntu-s-2vcpu-4gb-120gb-intel-sgp1-01:~/CorporateSocialResponsibility# npm run build
 
-Buka file app/api/documents/route.ts dan ganti seluruh isinya dengan kode ini:
+> tjsl-platform-pln@0.1.0 build
+> next build
 
-// app/api/documents/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { createClient } from '@supabase/supabase-js';
+   ▲ Next.js 15.4.4
+   - Environments: .env
 
-const prisma = new PrismaClient();
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 31.0s
 
-export async function POST(request: NextRequest) {
-  const formData = await request.formData();
-  
-  const file = formData.get('file') as File;
-  const programId = formData.get('programId') as string;
-  const userId = formData.get('userId') as string;
+Failed to compile.
 
-  if (!file || !programId || !userId) {
-    return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });
-  }
+./src/app/about/page.tsx
+352:19  Error: Do not use an <a> element to navigate to /. Use <Link /> from next/link instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
 
-  try {
-    const filename = `${programId}/${Date.now()}-${file.name}`;
+./src/app/api/account/route.ts
+57:13  Warning: 'password' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+61:19  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+61:54  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-    // 1. Upload file ke Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from('dokumen-tjsl') // Nama bucket Anda
-      .upload(filename, file);
+./src/app/api/ai-insight/route.ts
+106:36  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+126:7  Error: 'activePrompt' is never reassigned. Use 'const' instead.  prefer-const
+126:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+240:50  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+247:50  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+256:53  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-    if (uploadError) {
-      throw new Error(`Supabase Upload Error: ${uploadError.message}`);
-    }
+./src/app/api/ai-settings/api-keys/route.ts
+34:10  Warning: 'decryptApiKey' is defined but never used.  @typescript-eslint/no-unused-vars
+73:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+74:26  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+115:43  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+161:46  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+229:23  Warning: '_' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+280:9  Error: 'updateData' is never reassigned. Use 'const' instead.  prefer-const
+280:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+310:23  Warning: '_' is assigned a value but never used.  @typescript-eslint/no-unused-vars
 
-    // 2. Dapatkan URL publik dari file yang baru di-upload
-    const { data } = supabase.storage
-      .from('dokumen-tjsl')
-      .getPublicUrl(filename);
+./src/app/api/documents/route.ts
+18:54  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-    // 3. Simpan metadata (TERMASUK URL) ke database PostgreSQL via Prisma
-    const doc = await prisma.dokumenProgram.create({
-      data: {
-        namaDokumen: file.name,
-        tipeDokumen: 'LAINNYA', // Sesuaikan jika perlu
-        urlDokumen: data.publicUrl, // Simpan URL, bukan konten file
-        kunciFile: filename, // Simpan path/key untuk manajemen file nanti
-        programId: programId,
-        uploadedById: userId,
-      }
-    });
+./src/app/api/insights/budget-analysis/route.ts
+26:37  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-    return NextResponse.json(doc, { status: 201 });
+./src/app/api/programs/[id]/reports/route.ts
+50:24  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Gagal memproses file' }, { status: 500 });
-  }
-}
+./src/app/api/proposals/[id]/generate-tor/route.ts
+40:94  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-(Penting: Pastikan skema DokumenProgram Anda memiliki kolom urlDokumen dan kunciFile seperti pada panduan-panduan awal, bukan fileContent.)
+./src/app/api/proposals/[id]/route.ts
+39:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+67:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+91:12  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
-Langkah 3: Sesuaikan Frontend
-Kabar baiknya, komponen frontend ManajemenDokumen.tsx Anda tidak perlu diubah sama sekali karena ia sudah mengirim FormData ke API. Semua perubahan logika terjadi di backend.
+./src/app/api/users/[id]/route.ts
+47:23  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
 
-Anda hanya perlu memastikan bahwa saat menampilkan daftar dokumen, Anda menggunakan link doc.urlDokumen yang kini mengarah ke Supabase.
+./src/app/contact/page.tsx
+427:19  Error: Do not use an <a> element to navigate to /. Use <Link /> from next/link instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
 
-// Di dalam komponen ManajemenDokumen.tsx
-// ...
-<a 
-    href={doc.urlDokumen} // Ini sudah benar
-    target="_blank"       // Tambahkan ini agar terbuka di tab baru
-    rel="noopener noreferrer"
-    className="text-blue-600 hover:underline"
->
-    {doc.namaDokumen}
-</a>
-// ...
+./src/app/dashboard/ai-settings/components/ApiKeyForm.tsx
+16:14  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+100:14  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
 
+./src/app/dashboard/ai-settings/components/PromptForm.tsx
+11:29  Warning: 'CardHeader' is defined but never used.  @typescript-eslint/no-unused-vars
+11:41  Warning: 'CardTitle' is defined but never used.  @typescript-eslint/no-unused-vars
+17:14  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+52:49  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+54:47  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+56:51  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+61:6  Warning: React Hook useEffect has a missing dependency: 'formData.model'. Either include it or remove the dependency array.  react-hooks/exhaustive-deps
+68:38  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+197:43  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/dashboard/ai-settings/page.tsx
+8:3  Warning: 'Settings' is defined but never used.  @typescript-eslint/no-unused-vars
+12:3  Warning: 'Loader2' is defined but never used.  @typescript-eslint/no-unused-vars
+129:16  Warning: 'kpiError' is defined but never used.  @typescript-eslint/no-unused-vars
+133:15  Warning: 'activePrompts' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/components/Header.tsx
+6:16  Warning: 'UserCircle' is defined but never used.  @typescript-eslint/no-unused-vars
+9:34  Warning: 'AvatarImage' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/components/Sidebar.tsx
+198:27  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+200:31  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/dashboard/guides/admin/page.tsx
+100:134  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+100:153  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:33  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:52  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+105:35  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+105:56  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+107:28  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+107:49  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+124:29  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+124:45  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+133:27  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+133:35  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+134:27  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+134:33  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+143:67  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+143:80  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+156:67  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+156:92  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+164:28  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+164:35  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+164:200  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+164:217  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+169:33  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+169:50  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+171:60  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+171:76  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+178:38  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+178:64  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+186:35  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+186:58  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+187:54  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+187:73  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+196:25  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+196:34  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+199:92  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+199:138  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+205:29  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+205:45  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+
+./src/app/dashboard/guides/user/page.tsx
+7:10  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+60:80  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+60:106  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+78:62  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+78:80  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:134  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:162  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:165  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:192  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:195  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+104:219  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+125:91  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+125:107  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+134:29  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+134:45  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+
+./src/app/dashboard/insights/ai/page.tsx
+7:10  Warning: 'Card' is defined but never used.  @typescript-eslint/no-unused-vars
+7:16  Warning: 'CardContent' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/insights/layout.tsx
+4:10  Warning: 'usePathname' is defined but never used.  @typescript-eslint/no-unused-vars
+5:10  Warning: 'cn' is defined but never used.  @typescript-eslint/no-unused-vars
+6:41  Warning: 'Brain' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/insights/page.tsx
+6:10  Warning: 'Card' is defined but never used.  @typescript-eslint/no-unused-vars
+6:16  Warning: 'CardContent' is defined but never used.  @typescript-eslint/no-unused-vars
+6:29  Warning: 'CardHeader' is defined but never used.  @typescript-eslint/no-unused-vars
+6:41  Warning: 'CardTitle' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/my-programs/page.tsx
+9:18  Warning: 'Calendar' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/overview/page.tsx
+6:113  Warning: 'LineChart' is defined but never used.  @typescript-eslint/no-unused-vars
+6:124  Warning: 'Line' is defined but never used.  @typescript-eslint/no-unused-vars
+6:147  Warning: 'RadialBarChart' is defined but never used.  @typescript-eslint/no-unused-vars
+6:163  Warning: 'RadialBar' is defined but never used.  @typescript-eslint/no-unused-vars
+8:22  Warning: 'Users' is defined but never used.  @typescript-eslint/no-unused-vars
+8:75  Warning: 'ArrowDownRight' is defined but never used.  @typescript-eslint/no-unused-vars
+8:127  Warning: 'Calendar' is defined but never used.  @typescript-eslint/no-unused-vars
+54:7  Warning: 'GRADIENT_COLORS' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+68:10  Warning: 'users' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/programs/[id]/components/LaporanList.tsx
+3:20  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+40:9  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+198:52  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+268:9  Error: 'endPage' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/app/dashboard/programs/[id]/reports/page.tsx
+17:20  Warning: 'BarChart3' is defined but never used.  @typescript-eslint/no-unused-vars
+17:31  Warning: 'TrendingUp' is defined but never used.  @typescript-eslint/no-unused-vars
+17:43  Warning: 'Clock' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/programs/components/LpjDocument.tsx
+75:15  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+116:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+117:49  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+119:29  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+120:49  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+125:65  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+174:49  Warning: 'index' is defined but never used.  @typescript-eslint/no-unused-vars
+188:21  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+188:37  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+
+./src/app/dashboard/proposals/[id]/edit/components/TorDocuments.tsx
+3:50  Warning: 'Font' is defined but never used.  @typescript-eslint/no-unused-vars
+207:17  Warning: Image elements must have an alt prop, either with meaningful text, or an empty string for decorative images.  jsx-a11y/alt-text
+237:49  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+237:66  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+250:59  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+256:39  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+257:40  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+286:52  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+287:52  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+293:51  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+299:46  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+299:105  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+300:52  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+300:98  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+301:54  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+301:102  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/dashboard/proposals/[id]/edit/page.tsx
+70:36  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+70:54  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+71:42  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+71:48  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+
+./src/app/dashboard/proposals/[id]/konversi/components/KonversiForm.tsx
+36:13  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+37:10  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/dashboard/proposals/[id]/konversi/page.tsx
+3:10  Warning: 'notFound' is defined but never used.  @typescript-eslint/no-unused-vars
+120:77  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+120:94  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+
+./src/app/dashboard/proposals/[id]/page.tsx
+66:29  Warning: 'status' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/dashboard/proposals/components/ProposalActions.tsx
+6:26  Warning: 'FileText' is defined but never used.  @typescript-eslint/no-unused-vars
+148:56  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+148:73  Error: " can be escaped with &quot;, &ldquo;, &#34;, &rdquo;.  react/no-unescaped-entities
+
+./src/app/dashboard/proposals/page.tsx
+37:3  Warning: 'Calendar' is defined but never used.  @typescript-eslint/no-unused-vars
+38:3  Warning: 'User' is defined but never used.  @typescript-eslint/no-unused-vars
+54:21  Error: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/dashboard/users/page.tsx
+30:3  Warning: 'MoreVertical' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/page.tsx
+20:3  Warning: 'Shield' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/programs/page.tsx
+7:3  Warning: 'Star' is defined but never used.  @typescript-eslint/no-unused-vars
+349:19  Error: Do not use an <a> element to navigate to /. Use <Link /> from next/link instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+./src/components/ui/input.tsx
+5:18  Error: An interface declaring no members is equivalent to its supertype.  @typescript-eslint/no-empty-object-type
+
+./src/components/ui/pagination.tsx
+45:3  Warning: 'size' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/types/next-auth.d.ts
+1:8  Warning: 'NextAuth' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+root@ubuntu-s-2vcpu-4gb-120gb-intel-sgp1-01:~/CorporateSocialResponsibility
