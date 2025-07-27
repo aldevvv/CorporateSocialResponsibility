@@ -1,7 +1,7 @@
 // app/api/proposals/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 // Fungsi untuk MENGAMBIL (Get) data proposal individual
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -17,12 +17,12 @@ export async function GET(
   }
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const proposal = await prisma.programProposal.findUnique({
       where: { id: id },
       include: {
-        user: {
+        createdBy: {
           select: {
             name: true,
             email: true
@@ -43,15 +43,15 @@ export async function GET(
 // Fungsi untuk MENGUBAH (Update/PATCH) data proposal
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { user: { role: string } } | null;
   if (!session || session.user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
 
     const updatedProposal = await prisma.programProposal.update({
@@ -73,15 +73,15 @@ export async function PATCH(
 // Fungsi untuk MENGHAPUS (Delete) data proposal
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { user: { role: string } } | null;
   if (!session || session.user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     await prisma.programProposal.delete({
       where: { id: id },
