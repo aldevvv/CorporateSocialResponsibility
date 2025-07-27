@@ -20,7 +20,7 @@ export default function AdminGuidePage() {
       return;
     }
 
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user || (session.user as { role: string }).role !== 'ADMIN') {
       router.push('/dashboard/guides');
       return;
     }
@@ -36,7 +36,7 @@ export default function AdminGuidePage() {
   }
 
   // Show access denied if not admin
-  if (!session || session.user.role !== 'ADMIN') {
+  if (!session || !session.user || (session.user as { role: string }).role !== 'ADMIN') {
     return (
       <div className="space-y-6">
         <Card className="border-red-200 bg-red-50">
