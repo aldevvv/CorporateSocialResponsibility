@@ -38,13 +38,14 @@ async function getProgramReports(id: string) {
   return program;
 }
 
-export default async function ProgramReportsPage({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
+export default async function ProgramReportsPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await getServerSession(authOptions) as { user: { id: string; role: string } } | null;
   if (!session?.user) {
     redirect('/login');
   }
 
-  const program = await getProgramReports(params.id);
+  const { id } = await params;
+  const program = await getProgramReports(id);
 
   if (!program) {
     notFound();
@@ -93,7 +94,7 @@ export default async function ProgramReportsPage({ params }: { params: { id: str
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href={`/dashboard/programs/${params.id}`} className="text-blue-600 hover:text-blue-800">
+                    <Link href={`/dashboard/programs/${id}`} className="text-blue-600 hover:text-blue-800">
                       {program.judul}
                     </Link>
                   </BreadcrumbLink>
@@ -154,7 +155,7 @@ export default async function ProgramReportsPage({ params }: { params: { id: str
         <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl">
           <CardContent className="p-6">
             <LaporanList
-              programId={params.id}
+              programId={id}
               initialReports={formattedReports as Array<{
                 id: string;
                 tipeLaporan: string;
