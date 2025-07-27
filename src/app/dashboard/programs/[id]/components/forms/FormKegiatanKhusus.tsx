@@ -20,13 +20,13 @@ const formSchema = z.object({
     message: "Tipe kegiatan harus dipilih.",
   }),
   lokasiKegiatan: z.string().min(3, "Lokasi kegiatan minimal 3 karakter."),
-  jumlahPeserta: z.coerce.number().min(1, "Jumlah peserta minimal 1."),
+  jumlahPeserta: z.number().min(1, "Jumlah peserta minimal 1."),
   tanggalMulai: z.string().min(1, "Tanggal mulai harus diisi."),
   tanggalSelesai: z.string().min(1, "Tanggal selesai harus diisi."),
   hasilKegiatan: z.string().min(10, "Hasil kegiatan minimal 10 karakter."),
   kendalaKegiatan: z.string().optional(),
   rekomendasiTindakLanjut: z.string().optional(),
-  biayaKegiatan: z.coerce.number().min(0, "Biaya tidak boleh negatif.").optional(),
+  biayaKegiatan: z.number().min(0, "Biaya tidak boleh negatif.").optional(),
 });
 
 interface FormProps {
@@ -142,24 +142,25 @@ export function FormKegiatanKhusus({ programId, onFinished }: FormProps) {
             )} 
           />
 
-          <FormField 
-            control={form.control} 
-            name="jumlahPeserta" 
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Jumlah Peserta</FormLabel>
-                <FormControl>
-                  <Input 
-                    type="number" 
-                    min="1" 
-                    placeholder="0"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )} 
-          />
+          <FormField
+           control={form.control}
+           name="jumlahPeserta"
+           render={({ field }) => (
+             <FormItem>
+               <FormLabel>Jumlah Peserta</FormLabel>
+               <FormControl>
+                 <Input
+                   type="number"
+                   min="1"
+                   placeholder="0"
+                   {...field}
+                   onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                 />
+               </FormControl>
+               <FormMessage />
+             </FormItem>
+           )}
+         />
         </div>
 
         <FormField 
@@ -266,23 +267,24 @@ export function FormKegiatanKhusus({ programId, onFinished }: FormProps) {
           )} 
         />
 
-        <FormField 
-          control={form.control} 
-          name="biayaKegiatan" 
+        <FormField
+          control={form.control}
+          name="biayaKegiatan"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Biaya Kegiatan (IDR) - Opsional</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  min="0" 
+                <Input
+                  type="number"
+                  min="0"
                   placeholder="0"
-                  {...field} 
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )} 
+          )}
         />
 
         <Button type="submit">Kirim Laporan Kegiatan</Button>

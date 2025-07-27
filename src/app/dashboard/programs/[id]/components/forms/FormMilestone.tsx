@@ -16,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const formSchema = z.object({
   namaMilestone: z.string().min(5, "Nama milestone minimal 5 karakter."),
   deskripsiPencapaian: z.string().min(10, "Deskripsi pencapaian minimal 10 karakter."),
-  persentaseSelesai: z.coerce.number().min(0).max(100, "Persentase harus antara 0 dan 100."),
+  persentaseSelesai: z.number().min(0).max(100, "Persentase harus antara 0 dan 100."),
   statusMilestone: z.enum(['tercapai', 'terlambat', 'dalam_progres'], {
     message: "Status milestone harus dipilih.",
   }),
@@ -109,24 +109,25 @@ export function FormMilestone({ programId, onFinished }: FormProps) {
         />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField 
-            control={form.control} 
-            name="persentaseSelesai" 
+          <FormField
+            control={form.control}
+            name="persentaseSelesai"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Persentase Selesai (%)</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
-                    min="0" 
-                    max="100" 
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
                     placeholder="0"
-                    {...field} 
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            )} 
+            )}
           />
 
           <FormField 

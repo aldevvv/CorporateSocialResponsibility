@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
   deskripsiKegiatan: z.string().min(10, "Deskripsi kegiatan minimal 10 karakter."),
-  persentaseProgres: z.coerce.number().min(0).max(100, "Persentase harus antara 0 dan 100."),
+  persentaseProgres: z.number().min(0).max(100, "Persentase harus antara 0 dan 100."),
 });
 
 interface FormProps {
@@ -74,24 +74,25 @@ export function FormProgresRutin({ programId, onFinished }: FormProps) {
             </FormItem>
           )} 
         />
-        <FormField 
-          control={form.control} 
-          name="persentaseProgres" 
+        <FormField
+          control={form.control}
+          name="persentaseProgres"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Persentase Progres (%)</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  min="0" 
-                  max="100" 
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
                   placeholder="0"
-                  {...field} 
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )} 
+          )}
         />
         <Button type="submit">Kirim Laporan</Button>
       </form>

@@ -39,8 +39,8 @@ const formSchema = z.object({
   tujuanProgram: z.string().min(20, { message: 'Tujuan program minimal 20 karakter.' }),
   indikatorKeberhasilan: z.string().min(20, { message: 'Indikator keberhasilan wajib diisi.' }),
   targetPenerimaManfaat: z.string().min(10, { message: 'Target penerima manfaat wajib diisi.' }),
-  jumlahPenerimaManfaat: z.coerce.number().int().positive({ message: 'Jumlah harus angka positif.' }),
-  estimasiAnggaran: z.coerce.number().positive({ message: 'Anggaran harus angka positif.' }),
+  jumlahPenerimaManfaat: z.number().int().positive({ message: 'Jumlah harus angka positif.' }),
+  estimasiAnggaran: z.number().positive({ message: 'Anggaran harus angka positif.' }),
   perkiraanMulai: z.date({ message: 'Tanggal mulai wajib diisi.' }),
   perkiraanSelesai: z.date({ message: 'Tanggal selesai wajib diisi.' }),
 }).refine((data) => data.perkiraanSelesai > data.perkiraanMulai, {

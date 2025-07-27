@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const formSchema = z.object({
   deskripsiTransaksi: z.string().min(10, "Deskripsi transaksi minimal 10 karakter."),
-  jumlah: z.coerce.number().min(1, "Jumlah harus lebih dari 0."),
+  jumlah: z.number().min(1, "Jumlah harus lebih dari 0."),
   tipe: z.enum(['pemasukan', 'pengeluaran'], {
     message: "Tipe transaksi harus dipilih.",
   }),
@@ -105,23 +105,24 @@ export function FormKeuangan({ programId, onFinished }: FormProps) {
             </FormItem>
           )} 
         />
-        <FormField 
-          control={form.control} 
-          name="jumlah" 
+        <FormField
+          control={form.control}
+          name="jumlah"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Jumlah (IDR)</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  min="1" 
+                <Input
+                  type="number"
+                  min="1"
                   placeholder="0"
-                  {...field} 
+                  {...field}
+                  onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )} 
+          )}
         />
         <FormField 
           control={form.control} 
