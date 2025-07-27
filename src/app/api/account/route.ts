@@ -1,6 +1,6 @@
 // app/api/account/route.ts
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 import { compare, hash } from 'bcryptjs';
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 export async function PATCH(request: Request) {
   // 1. Dapatkan sesi pengguna untuk otorisasi
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { user?: { id: string } } | null;
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -19,7 +19,7 @@ export async function PATCH(request: Request) {
 
   // 3. Ambil data pengguna saat ini dari database untuk verifikasi
   const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
+    where: { id: session.user!.id },
   });
 
   if (!user) {
@@ -50,7 +50,7 @@ export async function PATCH(request: Request) {
   // 6. Lakukan update ke database
   try {
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { id: session.user!.id },
       data: dataToUpdate,
     });
     // Hapus data sensitif dari respons

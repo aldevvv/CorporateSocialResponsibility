@@ -64,7 +64,22 @@ export default async function ProposalDetailPage({ params }: { params: Promise<{
     notFound();
   }
   
-  const getStatusVariant = (status: string) => { /* ... (fungsi getStatusVariant dari halaman list) ... */ };
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'DRAFT':
+        return 'secondary';
+      case 'DIAJUKAN':
+        return 'default';
+      case 'DISETUJUI':
+        return 'default';
+      case 'DITOLAK':
+        return 'destructive';
+      case 'SELESAI':
+        return 'default';
+      default:
+        return 'secondary';
+    }
+  };
 
   return (
     <div className="space-y-6">
