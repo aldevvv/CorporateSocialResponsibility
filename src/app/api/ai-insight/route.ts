@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import crypto from 'crypto';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
@@ -130,16 +130,17 @@ export async function POST(req: Request) {
     model: string;
     temperature: number;
     maxTokens: number;
+    apiKeyId: string;
     apiKey: {
       provider: string;
       apiKey: string;
     };
-  } | null;
+  } | null = null;
   let userId: string | null = null;
   
   try {
     // Get session for user tracking
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string } } | null;
     userId = session?.user?.id || null;
     
     // Get request metadata
@@ -150,7 +151,6 @@ export async function POST(req: Request) {
     const userMessage = messages[messages.length - 1].content;
 
     // 1. Get active AI prompt for general chatbot (fallback to first active prompt)
-    let activePrompt;
     try {
       activePrompt = await prisma.aIPrompt.findFirst({
         where: {
@@ -247,14 +247,14 @@ export async function POST(req: Request) {
         let totalResponseText = '';
         
         try {
-          if (activePrompt.apiKey.provider === 'GOOGLE') {
+          if (activePrompt!.apiKey.provider === 'GOOGLE') {
             const googleResponse = aiResponse as { stream: AsyncIterable<{ text(): string }> };
             for await (const chunk of googleResponse.stream) {
               const text = chunk.text();
               totalResponseText += text;
               controller.enqueue(encoder.encode(text));
             }
-          } else if (activePrompt.apiKey.provider === 'OPENAI') {
+          } else if (activePrompt!.apiKey.provider === 'OPENAI') {
             const openaiResponse = aiResponse as AsyncIterable<{ choices: Array<{ delta?: { content?: string } }> }>;
             for await (const chunk of openaiResponse) {
               const text = chunk.choices[0]?.delta?.content || '';
@@ -263,10 +263,10 @@ export async function POST(req: Request) {
                 controller.enqueue(encoder.encode(text));
               }
             }
-          } else if (activePrompt.apiKey.provider === 'ANTHROPIC') {
+          } else if (activePrompt!.apiKey.provider === 'ANTHROPIC') {
             const anthropicResponse = aiResponse as AsyncIterable<{ type: string; delta?: { text?: string } }>;
             for await (const chunk of anthropicResponse) {
-              if (chunk.type === 'content_block_delta') {
+              if (chunk.type === 'content_block_delta' && chunk.delta) {
                 const text = chunk.delta.text || '';
                 if (text) {
                   totalResponseText += text;
@@ -283,10 +283,10 @@ export async function POST(req: Request) {
           const totalTokens = requestTokens + responseTokens;
           
           await logAIUsage(
-            activePrompt.id,
-            activePrompt.apiKeyId,
-            activePrompt.model,
-            activePrompt.apiKey.provider,
+            activePrompt!.id,
+            activePrompt!.apiKeyId,
+            activePrompt!.model,
+            activePrompt!.apiKey.provider,
             userId,
             userAgent,
             ipAddress,
