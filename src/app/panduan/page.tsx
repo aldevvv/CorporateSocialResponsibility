@@ -1,6 +1,6 @@
 // app/panduan/page.tsx
 import { Metadata } from 'next'
-import PanduanMDX from '@/content/panduan.mdx'
+import PanduanMDX from '../../../content/panduan.mdx'
 
 export const metadata: Metadata = {
   title: 'Panduan Platform CSR PLN',
