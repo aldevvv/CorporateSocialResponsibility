@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 
 // Helper untuk merender detail laporan berdasarkan tipenya
 const renderReportDetail = (report: LaporanProgres) => {
-  const data = report.data as Record<string, any>;
+  const data = report.data as Record<string, string | number>;
   switch (report.tipeLaporan) {
     case 'PROGRES_RUTIN':
       return (
@@ -107,16 +107,16 @@ export function LpjDocument({ program }: { program: ProgramWithDetails }) {
   // Agregasi data: Menghitung total pengeluaran dan pemasukan
   const laporanKeuangan = program.laporanProgres.filter(r => r.tipeLaporan === 'KEUANGAN');
   const totalPengeluaran = laporanKeuangan
-    .filter(r => (r.data as Record<string, any>).tipe === 'pengeluaran')
-    .reduce((sum, r) => sum + Number((r.data as Record<string, any>).jumlah), 0);
+    .filter(r => (r.data as Record<string, string | number>).tipe === 'pengeluaran')
+    .reduce((sum, r) => sum + Number((r.data as Record<string, string | number>).jumlah), 0);
   const totalPemasukan = laporanKeuangan
-    .filter(r => (r.data as Record<string, any>).tipe === 'pemasukan')
-    .reduce((sum, r) => sum + Number((r.data as Record<string, any>).jumlah), 0);
+    .filter(r => (r.data as Record<string, string | number>).tipe === 'pemasukan')
+    .reduce((sum, r) => sum + Number((r.data as Record<string, string | number>).jumlah), 0);
 
   // Menghitung rata-rata progres
   const laporanProgres = program.laporanProgres.filter(r => r.tipeLaporan === 'PROGRES_RUTIN');
   const rataRataProgres = laporanProgres.length > 0 
-    ? laporanProgres.reduce((sum, r) => sum + Number((r.data as Record<string, any>).persentaseProgres), 0) / laporanProgres.length
+    ? laporanProgres.reduce((sum, r) => sum + Number((r.data as Record<string, string | number>).persentaseProgres), 0) / laporanProgres.length
     : 0;
 
   return (

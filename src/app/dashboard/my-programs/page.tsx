@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, DollarSign, Users, Eye, FileText, BarChart3, Briefcase, Target, Clock } from 'lucide-react';
+import { MapPin, DollarSign, Users, Eye, FileText, BarChart3, Briefcase, Target, Clock } from 'lucide-react';
 import Link from 'next/link';
 
 const prisma = new PrismaClient();

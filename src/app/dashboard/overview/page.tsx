@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, RadialBarChart, RadialBar } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Users, DollarSign, FileText, Activity, ArrowUpRight, ArrowDownRight, Clock, CheckCircle, Target, MapPin, Calendar, BarChart3 } from 'lucide-react';
+import { TrendingUp, DollarSign, FileText, Activity, ArrowUpRight, Clock, CheckCircle, Target, MapPin, BarChart3 } from 'lucide-react';
 
 // Tipe data untuk metrik
 interface DashboardMetrics {

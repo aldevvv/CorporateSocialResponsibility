@@ -1,6 +1,6 @@
 // app/dashboard/proposals/components/TorDocument.tsx
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet, Font, Image } from '@react-pdf/renderer';
+import { Page, Text, View, Document, StyleSheet, Image } from '@react-pdf/renderer';
 import { ProgramProposal } from '@prisma/client';
 import path from 'path';
 import fs from 'fs';

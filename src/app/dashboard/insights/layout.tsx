@@ -1,9 +1,7 @@
 // app/dashboard/insights/layout.tsx
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
-import { ChevronRight, Home, BarChart3, Brain } from 'lucide-react';
+import { ChevronRight, Home, BarChart3 } from 'lucide-react';
 
 export default function InsightsLayout({ children }: { children: React.ReactNode }) {
   return (

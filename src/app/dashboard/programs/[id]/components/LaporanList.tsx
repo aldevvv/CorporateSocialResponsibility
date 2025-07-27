@@ -37,7 +37,7 @@ import {
 interface LaporanProgres {
   id: string;
   tipeLaporan: string;
-  data: Record<string, any>;
+  data: Record<string, string | number | Date>;
   createdAt: string;
   createdBy: {
     name: string;
@@ -195,7 +195,7 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
     }
   };
 
-  const renderReportContent = (type: string, data: Record<string, any>) => {
+  const renderReportContent = (type: string, data: Record<string, string | number | Date>) => {
     switch (type) {
       case 'PROGRES_RUTIN':
         return (
