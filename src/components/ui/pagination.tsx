@@ -42,7 +42,7 @@ type PaginationLinkProps = {
 const PaginationLink = ({
   className,
   isActive,
-  size: _size = "icon",
+  size: _size = "icon", // eslint-disable-line @typescript-eslint/no-unused-vars
   ...props
 }: PaginationLinkProps) => (
   <a
