@@ -9,7 +9,7 @@ import { BookOpenText, Shield, User } from 'lucide-react';
 
 export default function GuidesPage() {
   const { data: session } = useSession();
-  const isAdmin = session?.user?.role === 'ADMIN';
+  const isAdmin = (session?.user as { role: string })?.role === 'ADMIN';
 
   return (
     <div className="space-y-6">
