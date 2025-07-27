@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     const doc = await prisma.dokumenProgram.create({
       data: {
         namaDokumen: file.name,
-        tipeDokumen: tipeDokumen || 'LAINNYA', // Sesuaikan jika perlu
+        tipeDokumen: (tipeDokumen as 'MoU' | 'PKS' | 'SURAT_RESMI' | 'DOKUMENTASI' | 'LAINNYA') || 'LAINNYA',
         urlDokumen: data.publicUrl, // Simpan URL, bukan konten file
         kunciFile: filename, // Simpan path/key untuk manajemen file nanti
         programId: programId,
