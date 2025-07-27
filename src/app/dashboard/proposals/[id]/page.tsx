@@ -56,8 +56,9 @@ function DetailItem({ label, value }: { label: string; value: string | number | 
   );
 }
 
-export default async function ProposalDetailPage({ params }: { params: { id: string } }) {
-  const proposal = await getProposal(params.id);
+export default async function ProposalDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const proposal = await getProposal(resolvedParams.id);
 
   if (!proposal) {
     notFound();
