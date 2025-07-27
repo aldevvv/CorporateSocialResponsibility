@@ -18,13 +18,19 @@ export async function GET(
       return NextResponse.json({ error: 'Dokumen tidak ditemukan' }, { status: 404 });
     }
 
-    // Return file content as response
-    const buffer = Buffer.from(doc.fileContent, 'base64');
-    return new NextResponse(buffer, {
-      headers: {
-        'Content-Type': doc.mimeType || 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${doc.namaDokumen}"`,
-      },
+    // Redirect to the document URL (since files are stored externally)
+    if (doc.urlDokumen) {
+      return NextResponse.redirect(doc.urlDokumen);
+    }
+    
+    // If no URL available, return document metadata
+    return NextResponse.json({
+      id: doc.id,
+      namaDokumen: doc.namaDokumen,
+      tipeDokumen: doc.tipeDokumen,
+      urlDokumen: doc.urlDokumen,
+      kunciFile: doc.kunciFile,
+      createdAt: doc.createdAt,
     });
 
   } catch (error) {
