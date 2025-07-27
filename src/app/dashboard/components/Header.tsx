@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { Bell, Settings, LogOut } from 'lucide-react';
+import { useMemo, useCallback } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -17,9 +18,36 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function Header() {
-  const { data: session } = useSession();
-  const user = session?.user;
-  const userInitials = user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U';
+  const { data: session, status } = useSession();
+  
+  // Memoize user data to prevent unnecessary re-renders
+  const user = useMemo(() => session?.user as { name?: string; email?: string; role?: string } | undefined, [session?.user]);
+  
+  // Memoize user initials calculation
+  const userInitials = useMemo(() =>
+    user?.name?.split(' ').map(n => n[0]).join('').toUpperCase() || 'U',
+    [user?.name]
+  );
+
+  // Memoize logout handler
+  const handleLogout = useCallback(() => {
+    signOut({ callbackUrl: '/login' });
+  }, []);
+
+  // Show loading state while session is loading
+  if (status === 'loading') {
+    return (
+      <header className="sticky top-0 z-30 flex items-center justify-between h-16 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] backdrop-blur-md border-b border-white/10 px-4 lg:px-6 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="lg:hidden w-16"></div>
+        </div>
+        <div className="flex items-center gap-2 lg:gap-4">
+          <div className="w-10 h-10 bg-white/10 rounded-full animate-pulse"></div>
+          <div className="w-24 h-8 bg-white/10 rounded animate-pulse"></div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] backdrop-blur-md border-b border-white/10 px-4 lg:px-6 shadow-lg">
@@ -85,8 +113,8 @@ export function Header() {
                 </div>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => signOut({ callbackUrl: '/login' })}
+            <DropdownMenuItem
+              onClick={handleLogout}
               className="p-3 cursor-pointer hover:bg-red-50 rounded-lg text-red-600"
             >
               <div className="flex items-center gap-3">

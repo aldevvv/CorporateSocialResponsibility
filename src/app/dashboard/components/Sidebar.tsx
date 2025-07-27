@@ -18,41 +18,68 @@ import {
   Users,
   Settings
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [userProgramId, setUserProgramId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoadingProgram, setIsLoadingProgram] = useState(false);
 
-  // Removed program submenu logic - keeping sidebar clean
+  // Memoize user data to prevent unnecessary re-renders
+  const user = useMemo(() => session?.user as { role: string; id: string } | undefined, [session?.user]);
 
-  // Fetch user's program ID for USER role
+  // Optimized fetch user's program ID for USER role
   useEffect(() => {
-    if ((session?.user as { role: string; id: string })?.role === 'USER' && (session?.user as { id: string })?.id) {
-      fetch(`/api/user-program/${(session?.user as { id: string })?.id}`)
-        .then(res => res.json())
+    if (status === 'loading') return; // Wait for session to load
+    
+    if (user?.role === 'USER' && user?.id && !userProgramId && !isLoadingProgram) {
+      setIsLoadingProgram(true);
+      
+      const controller = new AbortController();
+      
+      fetch(`/api/user-program/${user.id}`, {
+        signal: controller.signal,
+        headers: {
+          'Cache-Control': 'max-age=300' // Cache for 5 minutes
+        }
+      })
+        .then(res => {
+          if (!res.ok) throw new Error('Failed to fetch program');
+          return res.json();
+        })
         .then(data => {
           if (data.programId) {
             setUserProgramId(data.programId);
           }
         })
-        .catch(err => console.error('Error fetching user program:', err));
+        .catch(err => {
+          if (err.name !== 'AbortError') {
+            console.error('Error fetching user program:', err);
+          }
+        })
+        .finally(() => {
+          setIsLoadingProgram(false);
+        });
+
+      return () => controller.abort();
     }
-  }, [session]);
+  }, [user?.role, user?.id, userProgramId, isLoadingProgram, status]);
 
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Define menu items based on user role
-  const getMenuItems = () => {
+  // Memoized menu items based on user role and program ID
+  const menuItems = useMemo(() => {
+    if (status === 'loading') return []; // Return empty array while loading
+    
     const baseMenuItems = [];
     
-    if ((session?.user as { role: string })?.role === 'ADMIN') {
+    if (user?.role === 'ADMIN') {
       baseMenuItems.push(
         {
           name: 'Overview',
@@ -97,7 +124,7 @@ export function Sidebar() {
           description: 'Panduan penggunaan sistem'
         }
       );
-    } else if ((session?.user as { role: string })?.role === 'USER') {
+    } else if (user?.role === 'USER') {
       baseMenuItems.push(
         {
           name: 'Program Saya',
@@ -139,14 +166,16 @@ export function Sidebar() {
       });
     }
 
-    // Removed program submenu to keep sidebar clean
-
     return baseMenuItems;
-  };
+  }, [user?.role, userProgramId, status]);
 
-  const menuItems = getMenuItems();
+  // Memoized mobile menu toggle
+  const toggleMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(prev => !prev);
+  }, []);
 
-  const SidebarContent = () => (
+  // Memoized SidebarContent to prevent unnecessary re-renders
+  const SidebarContent = useMemo(() => (
     <>
       {/* Header */}
       <div className="p-4 border-b border-white/10">
@@ -158,6 +187,7 @@ export function Sidebar() {
               width={32}
               height={32}
               className="object-contain"
+              priority
             />
           </div>
           <div>
@@ -169,44 +199,59 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1">
-        {menuItems.map((item) => {
-          const IconComponent = item.icon;
-          const isActive = pathname === item.href;
-          
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:backdrop-blur-sm
-                ${isActive
-                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20'
-                  : 'text-blue-100 hover:text-white'
-                }
-              `}
-            >
-              <div className={`p-1.5 rounded-md transition-colors ${
-                isActive
-                  ? 'bg-white/20'
-                  : 'bg-white/10 group-hover:bg-white/20'
-              }`}>
-                <IconComponent className="h-4 w-4" />
+        {status === 'loading' ? (
+          // Loading skeleton
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center gap-2.5 rounded-lg px-3 py-2">
+                <div className="w-8 h-8 bg-white/10 rounded-md animate-pulse"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-white/10 rounded animate-pulse mb-1"></div>
+                  <div className="h-3 bg-white/5 rounded animate-pulse w-3/4"></div>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-sm">
-                  {item.name}
-                </p>
-                {'description' in item && item.description && (
-                  <p className="text-xs text-blue-200 mt-0.5 truncate opacity-80">
-                    {item.description}
+            ))}
+          </div>
+        ) : (
+          menuItems.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = pathname === item.href;
+            
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:backdrop-blur-sm
+                  ${isActive
+                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20'
+                    : 'text-blue-100 hover:text-white'
+                  }
+                `}
+              >
+                <div className={`p-1.5 rounded-md transition-colors ${
+                  isActive
+                    ? 'bg-white/20'
+                    : 'bg-white/10 group-hover:bg-white/20'
+                }`}>
+                  <IconComponent className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm">
+                    {item.name}
                   </p>
+                  {'description' in item && item.description && (
+                    <p className="text-xs text-blue-200 mt-0.5 truncate opacity-80">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+                {isActive && (
+                  <div className="w-2 h-2 bg-[#FCD34D] rounded-full"></div>
                 )}
-              </div>
-              {isActive && (
-                <div className="w-2 h-2 bg-[#FCD34D] rounded-full"></div>
-              )}
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })
+        )}
       </nav>
 
       {/* Footer */}
@@ -221,13 +266,13 @@ export function Sidebar() {
         </div>
       </div>
     </>
-  );
+  ), [menuItems, pathname, status]);
 
   return (
     <>
       {/* Mobile Menu Button */}
       <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        onClick={toggleMobileMenu}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#1E40AF] text-white rounded-lg shadow-lg"
       >
         {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -235,7 +280,7 @@ export function Sidebar() {
 
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={() => setIsMobileMenuOpen(false)}
         />
@@ -243,14 +288,14 @@ export function Sidebar() {
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-72 bg-gradient-to-b from-[#1E40AF] to-[#1E3A8A] flex-col shadow-2xl">
-        <SidebarContent />
+        {SidebarContent}
       </aside>
 
       {/* Mobile Sidebar */}
       <aside className={`lg:hidden fixed left-0 top-0 h-screen w-72 bg-gradient-to-b from-[#1E40AF] to-[#1E3A8A] flex-col shadow-2xl z-40 transform transition-transform duration-300 ${
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        <SidebarContent />
+        {SidebarContent}
       </aside>
     </>
   );
