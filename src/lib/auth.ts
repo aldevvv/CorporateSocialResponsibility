@@ -98,6 +98,16 @@ export const authOptions = {
   },
   pages: {
     signIn: '/login',
+    signOut: '/login',
+  },
+  events: {
+    signOut: async () => {
+      // Force redirect to production domain
+      if (typeof window !== 'undefined') {
+        const baseUrl = process.env.NEXTAUTH_URL || window.location.origin;
+        window.location.href = `${baseUrl}/login`;
+      }
+    }
   },
   debug: process.env.NODE_ENV === 'development',
 }

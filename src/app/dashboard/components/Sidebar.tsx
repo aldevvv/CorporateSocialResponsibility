@@ -31,7 +31,7 @@ export function Sidebar() {
   // Memoize user data to prevent unnecessary re-renders
   const user = useMemo(() => session?.user as { role: string; id: string } | undefined, [session?.user]);
 
-  // Optimized fetch user's program ID for USER role
+  // Optimized fetch user's program ID for USER role - with timeout and fallback
   useEffect(() => {
     if (status === 'loading') return; // Wait for session to load
     
@@ -39,6 +39,13 @@ export function Sidebar() {
       setIsLoadingProgram(true);
       
       const controller = new AbortController();
+      
+      // Set timeout for API call (5 seconds max)
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        console.warn('API call timeout - using fallback menu');
+        setIsLoadingProgram(false);
+      }, 5000);
       
       fetch(`/api/user-program/${user.id}`, {
         signal: controller.signal,
@@ -51,11 +58,13 @@ export function Sidebar() {
           return res.json();
         })
         .then(data => {
+          clearTimeout(timeoutId);
           if (data.programId) {
             setUserProgramId(data.programId);
           }
         })
         .catch(err => {
+          clearTimeout(timeoutId);
           if (err.name !== 'AbortError') {
             console.error('Error fetching user program:', err);
           }
@@ -64,7 +73,10 @@ export function Sidebar() {
           setIsLoadingProgram(false);
         });
 
-      return () => controller.abort();
+      return () => {
+        controller.abort();
+        clearTimeout(timeoutId);
+      };
     }
   }, [user?.role, user?.id, userProgramId, isLoadingProgram, status]);
 
@@ -73,7 +85,7 @@ export function Sidebar() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Memoized menu items based on user role and program ID
+  // Memoized menu items based on user role - show immediately without waiting for API
   const menuItems = useMemo(() => {
     if (status === 'loading') return []; // Return empty array while loading
     
@@ -125,6 +137,7 @@ export function Sidebar() {
         }
       );
     } else if (user?.role === 'USER') {
+      // Show USER menu immediately - don't wait for API call
       baseMenuItems.push(
         {
           name: 'Program Saya',
@@ -134,18 +147,21 @@ export function Sidebar() {
         },
         {
           name: 'Riwayat Laporan',
+          // Use fallback URL first, will be updated when userProgramId is available
           href: userProgramId ? `/dashboard/programs/${userProgramId}/reports` : '/dashboard/reports',
           icon: ClipboardList,
           description: 'Laporan yang telah dibuat'
         },
         {
           name: 'Buat Laporan',
+          // Use fallback URL first, will be updated when userProgramId is available
           href: userProgramId ? `/dashboard/programs/${userProgramId}/create-report` : '/dashboard/create-report',
           icon: FileText,
           description: 'Buat laporan baru'
         },
         {
           name: 'Manajemen Dokumen',
+          // Use fallback URL first, will be updated when userProgramId is available
           href: userProgramId ? `/dashboard/programs/${userProgramId}/documents` : '/dashboard/documents',
           icon: Upload,
           description: 'Kelola dokumen program'
@@ -199,59 +215,44 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1">
-        {status === 'loading' ? (
-          // Loading skeleton
-          <div className="space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center gap-2.5 rounded-lg px-3 py-2">
-                <div className="w-8 h-8 bg-white/10 rounded-md animate-pulse"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-white/10 rounded animate-pulse mb-1"></div>
-                  <div className="h-3 bg-white/5 rounded animate-pulse w-3/4"></div>
-                </div>
+        {menuItems.map((item) => {
+          const IconComponent = item.icon;
+          const isActive = pathname === item.href;
+          
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:backdrop-blur-sm
+                ${isActive
+                  ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20'
+                  : 'text-blue-100 hover:text-white'
+                }
+              `}
+            >
+              <div className={`p-1.5 rounded-md transition-colors ${
+                isActive
+                  ? 'bg-white/20'
+                  : 'bg-white/10 group-hover:bg-white/20'
+              }`}>
+                <IconComponent className="h-4 w-4" />
               </div>
-            ))}
-          </div>
-        ) : (
-          menuItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = pathname === item.href;
-            
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200 hover:bg-white/10 hover:backdrop-blur-sm
-                  ${isActive
-                    ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20'
-                    : 'text-blue-100 hover:text-white'
-                  }
-                `}
-              >
-                <div className={`p-1.5 rounded-md transition-colors ${
-                  isActive
-                    ? 'bg-white/20'
-                    : 'bg-white/10 group-hover:bg-white/20'
-                }`}>
-                  <IconComponent className="h-4 w-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm">
-                    {item.name}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-sm">
+                  {item.name}
+                </p>
+                {'description' in item && item.description && (
+                  <p className="text-xs text-blue-200 mt-0.5 truncate opacity-80">
+                    {item.description}
                   </p>
-                  {'description' in item && item.description && (
-                    <p className="text-xs text-blue-200 mt-0.5 truncate opacity-80">
-                      {item.description}
-                    </p>
-                  )}
-                </div>
-                {isActive && (
-                  <div className="w-2 h-2 bg-[#FCD34D] rounded-full"></div>
                 )}
-              </Link>
-            );
-          })
-        )}
+              </div>
+              {isActive && (
+                <div className="w-2 h-2 bg-[#FCD34D] rounded-full"></div>
+              )}
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Footer */}

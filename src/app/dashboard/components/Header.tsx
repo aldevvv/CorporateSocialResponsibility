@@ -29,9 +29,13 @@ export function Header() {
     [user?.name]
   );
 
-  // Memoize logout handler
+  // Memoize logout handler with proper production URL
   const handleLogout = useCallback(() => {
-    signOut({ callbackUrl: '/login' });
+    const baseUrl = process.env.NEXTAUTH_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+    signOut({
+      callbackUrl: `${baseUrl}/login`,
+      redirect: true
+    });
   }, []);
 
   // Show loading state while session is loading

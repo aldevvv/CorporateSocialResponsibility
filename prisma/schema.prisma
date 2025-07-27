@@ -71,6 +71,8 @@ model Program {
   laporanProgres        LaporanProgres[]
   penanggungJawab       User             @relation(fields: [penanggungJawabId], references: [id])
   proposalAsal          ProgramProposal  @relation(fields: [proposalAsalId], references: [id])
+
+  @@index([penanggungJawabId])
 }
 
 model LaporanProgres {
