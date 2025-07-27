@@ -1,7 +1,7 @@
 // app/api/proposals/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
   try {
     // 1. Ambil sesi untuk otorisasi
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role?: string } } | null;
 
     // 2. Cek apakah user adalah ADMIN
     if (!session || session.user.role !== 'ADMIN') {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role?: string } } | null;
     
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
