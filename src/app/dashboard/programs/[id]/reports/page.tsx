@@ -14,7 +14,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Card, CardContent } from '@/components/ui/card';
-import { FileText, BarChart3, TrendingUp, Clock } from 'lucide-react';
+import { FileText } from 'lucide-react';
 
 const prisma = new PrismaClient();
 

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ProgramProposal, ProposalStatus } from '@prisma/client';
-import { MoreHorizontal, FileText } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

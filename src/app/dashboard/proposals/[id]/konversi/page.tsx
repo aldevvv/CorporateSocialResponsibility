@@ -1,6 +1,5 @@
 // app/dashboard/proposals/[id]/konversi/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { KonversiForm } from './components/KonversiForm';
 import { ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react';

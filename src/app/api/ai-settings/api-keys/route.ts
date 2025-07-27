@@ -1,6 +1,6 @@
 // app/api/ai-settings/api-keys/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
@@ -158,7 +158,7 @@ export async function GET() {
       });
 
       // Don't return the actual API key in the response
-      const safeApiKeys = apiKeys.map((item: { apiKey: string; id: string; name: string; provider: string; isActive: boolean; availableModels?: string[]; createdAt: Date; createdBy?: { name?: string; email: string } }) => {
+      const safeApiKeys = apiKeys.map((item) => {
         const { apiKey, ...rest } = item;
         return {
           ...rest,

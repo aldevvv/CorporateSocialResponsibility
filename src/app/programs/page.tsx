@@ -2,10 +2,9 @@
 import Link from 'next/link';
 import { PublicNavbar } from '@/components/PublicNavbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
+import {
   Calendar,
   MapPin,
-  Star,
   CheckCircle,
   Zap,
   Heart,

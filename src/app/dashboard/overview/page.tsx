@@ -51,21 +51,12 @@ interface User {
 
 // Warna untuk chart - Professional PLN color scheme
 const COLORS = ['#1E40AF', '#059669', '#DC2626', '#D97706', '#7C3AED', '#DB2777'];
-const GRADIENT_COLORS = {
-  primary: 'from-blue-600 to-blue-700',
-  success: 'from-green-500 to-green-600',
-  warning: 'from-amber-500 to-amber-600',
-  danger: 'from-red-500 to-red-600',
-  info: 'from-cyan-500 to-cyan-600',
-  purple: 'from-purple-500 to-purple-600'
-};
 
 export default function OverviewPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [programs, setPrograms] = useState<Program[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Proteksi halaman - hanya Admin yang bisa akses
@@ -99,8 +90,8 @@ export default function OverviewPage() {
         // Fetch users data (only for admin)
         if (session?.user?.role === 'ADMIN') {
           const usersResponse = await fetch('/api/users');
-          const usersData = await usersResponse.json();
-          setUsers(usersData);
+          const _usersData = await usersResponse.json();
+          // Users data fetched but not currently used in UI
         }
       } catch (error) {
         console.error("Gagal fetch data:", error);

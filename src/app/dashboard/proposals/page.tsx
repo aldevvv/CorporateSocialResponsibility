@@ -33,9 +33,7 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  TrendingUp,
-  Calendar,
-  User
+  TrendingUp
 } from 'lucide-react';
 
 interface Proposal {

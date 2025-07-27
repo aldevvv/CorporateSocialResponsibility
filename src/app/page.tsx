@@ -17,7 +17,6 @@ import {
   Zap,
   Heart,
   Leaf,
-  Shield,
   Globe,
   Lightbulb,
   Building2,

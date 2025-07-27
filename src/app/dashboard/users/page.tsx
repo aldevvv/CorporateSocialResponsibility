@@ -17,17 +17,16 @@ import {
   AlertDialogTrigger as DialogTrigger,
   AlertDialogFooter as DialogFooter
 } from '@/components/ui/alert-dialog';
-import { 
-  Users, 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Users,
+  Plus,
+  Edit,
+  Trash2,
   Search,
   UserPlus,
   Shield,
   User,
   Filter,
-  MoreVertical,
   Mail,
   Calendar,
   UserCheck

@@ -6,19 +6,26 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const doc = await prisma.dokumenProgram.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!doc) {
       return NextResponse.json({ error: 'Dokumen tidak ditemukan' }, { status: 404 });
     }
 
-    // Redirect ke URL Supabase Storage
-    return NextResponse.redirect(doc.urlDokumen);
+    // Return file content as response
+    const buffer = Buffer.from(doc.fileContent, 'base64');
+    return new NextResponse(buffer, {
+      headers: {
+        'Content-Type': doc.mimeType || 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${doc.namaDokumen}"`,
+      },
+    });
 
   } catch (error) {
     console.error(error);

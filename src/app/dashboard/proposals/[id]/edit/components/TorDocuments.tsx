@@ -207,6 +207,7 @@ export function TorDocument({ proposal }: TorDocumentProps) {
                 <Image
                   style={styles.logo}
                   src={logoBase64}
+                  alt="PLN Logo"
                 />
               ) : (
                 <View style={[styles.logo, { backgroundColor: '#1E40AF', borderRadius: 4, alignItems: 'center', justifyContent: 'center' }]}>
