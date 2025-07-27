@@ -1,6 +1,6 @@
 // app/dashboard/programs/[id]/reports/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -155,7 +155,7 @@ export default async function ProgramReportsPage({ params }: { params: { id: str
           <CardContent className="p-6">
             <LaporanList
               programId={params.id}
-              initialReports={formattedReports}
+              initialReports={formattedReports as any}
               initialPagination={{
                 currentPage: 1,
                 totalPages: Math.ceil(program.laporanProgres.length / 10),

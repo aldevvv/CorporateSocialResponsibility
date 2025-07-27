@@ -41,13 +41,6 @@ interface Program {
   };
 }
 
-interface User {
-  id: string;
-  name: string | null;
-  email: string;
-  role: string;
-  createdAt: string;
-}
 
 // Warna untuk chart - Professional PLN color scheme
 const COLORS = ['#1E40AF', '#059669', '#DC2626', '#D97706', '#7C3AED', '#DB2777'];
@@ -68,7 +61,7 @@ export default function OverviewPage() {
       return;
     }
     
-    if (session.user.role !== 'ADMIN') {
+    if ((session.user as any).role !== 'ADMIN') {
       router.push('/dashboard');
       return;
     }
@@ -88,9 +81,9 @@ export default function OverviewPage() {
         setPrograms(programsData);
 
         // Fetch users data (only for admin)
-        if (session?.user?.role === 'ADMIN') {
+        if ((session?.user as any)?.role === 'ADMIN') {
           const usersResponse = await fetch('/api/users');
-          const _usersData = await usersResponse.json();
+          await usersResponse.json();
           // Users data fetched but not currently used in UI
         }
       } catch (error) {
@@ -116,7 +109,7 @@ export default function OverviewPage() {
     );
   }
 
-  if (!session?.user || session.user.role !== 'ADMIN') {
+  if (!session?.user || (session.user as any).role !== 'ADMIN') {
     return null; // Akan di-redirect oleh useEffect di atas
   }
 

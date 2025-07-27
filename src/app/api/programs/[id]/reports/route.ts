@@ -1,6 +1,6 @@
 // app/api/programs/[id]/reports/route.ts
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -8,10 +8,10 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as any;
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -22,7 +22,7 @@ export async function GET(
     const search = searchParams.get('search') || '';
     const type = searchParams.get('type') || '';
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if program exists and user has access
     const program = await prisma.program.findUnique({
@@ -47,22 +47,7 @@ export async function GET(
     }
 
     // Build where clause for filtering
-    const whereClause: {
-      programId: string;
-      tipeLaporan?: string;
-      OR?: Array<{
-        createdBy?: {
-          name?: {
-            contains: string;
-            mode: 'insensitive';
-          };
-        };
-        tipeLaporan?: {
-          contains: string;
-          mode: 'insensitive';
-        };
-      }>;
-    } = {
+    const whereClause: any = {
       programId: id,
     };
 
@@ -78,12 +63,6 @@ export async function GET(
               contains: search,
               mode: 'insensitive',
             },
-          },
-        },
-        {
-          tipeLaporan: {
-            contains: search,
-            mode: 'insensitive',
           },
         },
       ];

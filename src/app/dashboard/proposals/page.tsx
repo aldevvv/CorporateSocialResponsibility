@@ -369,7 +369,7 @@ export default function ProposalsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <ProposalActions proposal={proposal} />
+                    <ProposalActions proposal={proposal as any} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -404,7 +404,7 @@ export default function ProposalsPage() {
                     </span>
                   </div>
                 </div>
-                <ProposalActions proposal={proposal} />
+                <ProposalActions proposal={proposal as any} />
               </div>
             </CardHeader>
             <CardContent className="pt-0">

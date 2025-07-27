@@ -140,7 +140,7 @@ export default async function KonversiPage({ params }: { params: Promise<{ id: s
 
       {/* Form Container */}
       <div className="bg-white rounded-lg border shadow-sm">
-        <KonversiForm proposal={serializedProposal} users={users} />
+        <KonversiForm proposal={serializedProposal as any} users={users as any} />
       </div>
     </div>
   );
