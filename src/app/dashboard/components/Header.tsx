@@ -46,7 +46,7 @@ export function Header() {
               <div className="hidden sm:block text-right">
                 <p className="text-sm font-medium text-white">{user?.name}</p>
                 <p className="text-xs text-blue-100">
-                  {user?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program'}
+                  {(user as { role: string })?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program'}
                 </p>
               </div>
               <Avatar className="h-9 w-9 ring-2 ring-white/20">
@@ -68,7 +68,7 @@ export function Header() {
                   <p className="font-medium text-gray-900">{user?.name}</p>
                   <p className="text-sm text-gray-500">{user?.email}</p>
                   <p className="text-xs text-[#1E40AF] font-medium">
-                    {user?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program'}
+                    {(user as { role: string })?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program'}
                   </p>
                 </div>
               </div>
