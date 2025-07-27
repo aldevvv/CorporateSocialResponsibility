@@ -155,7 +155,19 @@ export default async function ProgramReportsPage({ params }: { params: { id: str
           <CardContent className="p-6">
             <LaporanList
               programId={params.id}
-              initialReports={formattedReports as any}
+              initialReports={formattedReports as Array<{
+                id: string;
+                tipeLaporan: string;
+                data: Record<string, string | number | Date>;
+                programId: string;
+                createdById: string;
+                createdAt: string;
+                updatedAt: Date;
+                createdBy: {
+                  name: string;
+                  email: string;
+                };
+              }>}
               initialPagination={{
                 currentPage: 1,
                 totalPages: Math.ceil(program.laporanProgres.length / 10),

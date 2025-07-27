@@ -61,7 +61,7 @@ export default function OverviewPage() {
       return;
     }
     
-    if ((session.user as any).role !== 'ADMIN') {
+    if ((session.user as { role: string }).role !== 'ADMIN') {
       router.push('/dashboard');
       return;
     }
@@ -81,7 +81,7 @@ export default function OverviewPage() {
         setPrograms(programsData);
 
         // Fetch users data (only for admin)
-        if ((session?.user as any)?.role === 'ADMIN') {
+        if ((session?.user as { role: string } | undefined)?.role === 'ADMIN') {
           const usersResponse = await fetch('/api/users');
           await usersResponse.json();
           // Users data fetched but not currently used in UI
@@ -109,7 +109,7 @@ export default function OverviewPage() {
     );
   }
 
-  if (!session?.user || (session.user as any).role !== 'ADMIN') {
+  if (!session?.user || (session.user as { role: string }).role !== 'ADMIN') {
     return null; // Akan di-redirect oleh useEffect di atas
   }
 

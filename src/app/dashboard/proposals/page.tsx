@@ -369,7 +369,7 @@ export default function ProposalsPage() {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <ProposalActions proposal={proposal as any} />
+                    <ProposalActions proposal={proposal as unknown as import('@prisma/client').ProgramProposal} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -404,7 +404,7 @@ export default function ProposalsPage() {
                     </span>
                   </div>
                 </div>
-                <ProposalActions proposal={proposal as any} />
+                <ProposalActions proposal={proposal as unknown as import('@prisma/client').ProgramProposal} />
               </div>
             </CardHeader>
             <CardContent className="pt-0">

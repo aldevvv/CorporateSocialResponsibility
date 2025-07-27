@@ -11,7 +11,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions) as any;
+    const session = await getServerSession(authOptions) as { user: { id: string; role: string } } | null;
     if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -47,7 +47,18 @@ export async function GET(
     }
 
     // Build where clause for filtering
-    const whereClause: any = {
+    const whereClause: {
+      programId: string;
+      tipeLaporan?: string;
+      OR?: Array<{
+        createdBy?: {
+          name?: {
+            contains: string;
+            mode: 'insensitive';
+          };
+        };
+      }>;
+    } = {
       programId: id,
     };
 
