@@ -681,7 +681,7 @@ export default function AISettingsPage() {
           isOpen={showPromptForm}
           onClose={handlePromptFormClose}
           onSuccess={handleFormSuccess}
-          editData={editingPrompt}
+          editData={editingPrompt || undefined}
         />
       </div>
     </div>
