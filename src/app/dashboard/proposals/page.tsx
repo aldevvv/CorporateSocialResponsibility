@@ -51,7 +51,7 @@ interface Proposal {
   indikatorKeberhasilan: string;
   targetPenerimaManfaat: string;
   jumlahPenerimaManfaat: number;
-  estimasiAnggaran: any; // Decimal type from Prisma
+  estimasiAnggaran: number; // Decimal type from Prisma
   perkiraanMulai: Date;
   perkiraanSelesai: Date;
   status: ProposalStatus;

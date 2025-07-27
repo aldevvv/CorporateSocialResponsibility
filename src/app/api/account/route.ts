@@ -54,7 +54,7 @@ export async function PATCH(request: Request) {
       data: dataToUpdate,
     });
     // Hapus data sensitif dari respons
-    const { password: _, ...result } = updatedUser;
+    const { password: _password, ...result } = updatedUser;
     return NextResponse.json(result);
   } catch (error) {
 interface PrismaError extends Error {

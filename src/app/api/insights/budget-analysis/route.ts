@@ -23,7 +23,7 @@ export async function GET() {
       const pilar = program.proposalAsal.pilar;
       const anggaran = Number(program.anggaranFinal);
       const realisasi = program.laporanProgres.reduce((sum, report) => {
-        const data = report.data as any;
+        const data = report.data as { tipe?: string; jumlah?: number };
         return data.tipe === 'pengeluaran' ? sum + Number(data.jumlah) : sum;
       }, 0);
 

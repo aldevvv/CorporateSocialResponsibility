@@ -36,7 +36,7 @@ export async function GET(
     }
 
     return NextResponse.json(proposal);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Gagal mengambil data proposal' }, { status: 500 });
   }
 }
@@ -64,7 +64,7 @@ export async function PATCH(
     });
 
     return NextResponse.json(updatedProposal);
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Gagal memperbarui proposal' }, { status: 500 });
   }
 }
@@ -88,7 +88,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ message: 'Proposal berhasil dihapus' }, { status: 200 });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json({ error: 'Gagal menghapus proposal' }, { status: 500 });
   }
 }

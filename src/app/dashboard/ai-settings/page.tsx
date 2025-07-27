@@ -5,11 +5,9 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import {
-  Settings,
   Plus,
   Key,
   MessageSquare,
-  Loader2,
   Edit,
   Trash2,
   Brain,
@@ -126,11 +124,11 @@ export default function AISettingsPage() {
           const kpiResponseData = await kpiResponse.json();
           setKpiData(kpiResponseData);
         }
-      } catch (kpiError) {
+      } catch (_kpiError) {
         console.log('KPI endpoint not available yet, using calculated values');
         // Calculate basic KPI from existing data
         const activeApiKeys = apiKeysData.filter((key: ApiKey) => key.isActive).length;
-        const activePrompts = promptsData.filter((prompt: Prompt) => prompt.isActive).length;
+        const _activePrompts = promptsData.filter((prompt: Prompt) => prompt.isActive).length;
         
         setKpiData({
           totalRequests: 0, // This would come from usage logs

@@ -44,7 +44,12 @@ export async function PUT(
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: {
+      name?: string | null;
+      email?: string;
+      role?: string;
+      password?: string;
+    } = {};
     
     if (name !== undefined) updateData.name = name || null;
     if (email) updateData.email = email;

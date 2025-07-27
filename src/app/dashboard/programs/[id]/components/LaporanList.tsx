@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -37,7 +37,7 @@ import {
 interface LaporanProgres {
   id: string;
   tipeLaporan: string;
-  data: any;
+  data: Record<string, any>;
   createdAt: string;
   createdBy: {
     name: string;
@@ -195,7 +195,7 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
     }
   };
 
-  const renderReportContent = (type: string, data: any) => {
+  const renderReportContent = (type: string, data: Record<string, any>) => {
     switch (type) {
       case 'PROGRES_RUTIN':
         return (
@@ -265,7 +265,7 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
     const pages = [];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, pagination.currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
+    const endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);

@@ -145,7 +145,7 @@ export function ProposalActions({ proposal }: ProposalActionsProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>Konfirmasi Hapus</AlertDialogTitle>
           <AlertDialogDescription>
-            Apakah Anda yakin ingin menghapus proposal "{proposal.judul}"? 
+            Apakah Anda yakin ingin menghapus proposal &ldquo;{proposal.judul}&rdquo;?
             Tindakan ini tidak dapat dibatalkan.
           </AlertDialogDescription>
         </AlertDialogHeader>

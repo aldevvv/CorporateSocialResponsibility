@@ -67,8 +67,8 @@ export default async function EditProposalPage({ params }: { params: { id: strin
         <div className="p-6 bg-white rounded-lg shadow">
           <h1 className="text-2xl font-bold mb-6 text-red-600">Tidak Dapat Mengedit</h1>
           <p className="text-gray-600">
-            Proposal dengan status "{proposal.status}" tidak dapat diedit. 
-            Hanya proposal dengan status "DRAFT" yang dapat diedit.
+            Proposal dengan status &ldquo;{proposal.status}&rdquo; tidak dapat diedit.
+            Hanya proposal dengan status &ldquo;DRAFT&rdquo; yang dapat diedit.
           </p>
         </div>
       </div>

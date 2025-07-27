@@ -33,8 +33,22 @@ const konversiSchema = z.object({
 type KonversiFormData = z.infer<typeof konversiSchema>;
 
 interface KonversiFormProps {
-  proposal: any;
-  users: any[];
+  proposal: {
+    id: string;
+    judul: string;
+    pilar: string;
+    lokasiKecamatan: string;
+    lokasiKabupaten: string;
+    estimasiAnggaran: number;
+    jumlahPenerimaManfaat: number;
+    perkiraanMulai: Date;
+    perkiraanSelesai: Date;
+  };
+  users: Array<{
+    id: string;
+    name: string;
+    email: string;
+  }>;
 }
 
 export function KonversiForm({ proposal, users }: KonversiFormProps) {

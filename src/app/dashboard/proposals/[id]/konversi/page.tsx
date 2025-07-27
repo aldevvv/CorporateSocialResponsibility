@@ -117,7 +117,7 @@ export default async function KonversiPage({ params }: { params: Promise<{ id: s
           <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
             Konversi Menjadi Program Resmi
           </h1>
-          <p className="text-gray-600 mt-1">Finalisasi detail untuk program "{proposal.judul}" sebelum dieksekusi</p>
+          <p className="text-gray-600 mt-1">Finalisasi detail untuk program &ldquo;{proposal.judul}&rdquo; sebelum dieksekusi</p>
         </div>
         <div className="flex items-center space-x-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
           <CheckCircle className="h-4 w-4" />

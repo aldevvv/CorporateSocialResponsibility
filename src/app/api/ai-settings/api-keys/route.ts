@@ -70,8 +70,8 @@ async function detectModels(provider: string, apiKey: string, baseUrl?: string):
         if (openaiResponse.ok) {
           const data = await openaiResponse.json();
           return data.data
-            .filter((model: any) => model.id.includes('gpt'))
-            .map((model: any) => model.id)
+            .filter((model: { id: string }) => model.id.includes('gpt'))
+            .map((model: { id: string }) => model.id)
             .sort();
         }
         break;
@@ -112,7 +112,7 @@ async function detectModels(provider: string, apiKey: string, baseUrl?: string):
           
           if (customResponse.ok) {
             const data = await customResponse.json();
-            return data.data?.map((model: any) => model.id) || ['custom-model'];
+            return data.data?.map((model: { id: string }) => model.id) || ['custom-model'];
           }
         }
         return ['custom-model'];
@@ -158,7 +158,7 @@ export async function GET() {
       });
 
       // Don't return the actual API key in the response
-      const safeApiKeys = apiKeys.map((item: any) => {
+      const safeApiKeys = apiKeys.map((item: { apiKey: string; [key: string]: any }) => {
         const { apiKey, ...rest } = item;
         return {
           ...rest,
@@ -226,7 +226,7 @@ export async function POST(request: NextRequest) {
       });
 
       // Return without the actual API key
-      const { apiKey: _, ...safeApiKey } = newApiKey;
+      const { apiKey: _apiKey, ...safeApiKey } = newApiKey;
 
       return NextResponse.json({
         ...safeApiKey,
@@ -277,7 +277,13 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid provider' }, { status: 400 });
     }
 
-    let updateData: any = {
+    const updateData: {
+      name: string;
+      provider: 'OPENAI' | 'ANTHROPIC' | 'GOOGLE' | 'COHERE' | 'CUSTOM';
+      baseUrl?: string;
+      apiKey?: string;
+      availableModels?: string[];
+    } = {
       name,
       provider,
       baseUrl,
@@ -307,7 +313,7 @@ export async function PUT(request: NextRequest) {
       });
 
       // Return without the actual API key
-      const { apiKey: _, ...safeApiKey } = updatedApiKey;
+      const { apiKey: _apiKey, ...safeApiKey } = updatedApiKey;
 
       return NextResponse.json({
         ...safeApiKey,

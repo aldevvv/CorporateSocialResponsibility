@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 
 // Helper untuk merender detail laporan berdasarkan tipenya
 const renderReportDetail = (report: LaporanProgres) => {
-  const data: any = report.data;
+  const data = report.data as Record<string, any>;
   switch (report.tipeLaporan) {
     case 'PROGRES_RUTIN':
       return (
@@ -86,22 +86,16 @@ const renderReportDetail = (report: LaporanProgres) => {
           - [Keuangan] {data.deskripsiTransaksi}: Rp {Number(data.jumlah).toLocaleString('id-ID')} ({data.tipe})
         </Text>
       );
-    case 'MASALAH_KENDALA':
+    case 'INSIDEN_KENDALA':
       return (
         <Text style={styles.text}>
           - [Masalah] {data.deskripsiMasalah} | Solusi: {data.solusiDiterapkan}
         </Text>
       );
-    case 'DAMPAK_MANFAAT':
+    case 'KEGIATAN_KHUSUS':
       return (
         <Text style={styles.text}>
-          - [Dampak] {data.deskripsiDampak} | Penerima: {data.jumlahPenerima} orang
-        </Text>
-      );
-    case 'DOKUMENTASI':
-      return (
-        <Text style={styles.text}>
-          - [Dokumentasi] {data.deskripsiKegiatan} | Lokasi: {data.lokasiKegiatan}
+          - [Kegiatan] {data.deskripsiKegiatan} | Lokasi: {data.lokasiKegiatan}
         </Text>
       );
     default:
@@ -113,16 +107,16 @@ export function LpjDocument({ program }: { program: ProgramWithDetails }) {
   // Agregasi data: Menghitung total pengeluaran dan pemasukan
   const laporanKeuangan = program.laporanProgres.filter(r => r.tipeLaporan === 'KEUANGAN');
   const totalPengeluaran = laporanKeuangan
-    .filter(r => (r.data as any).tipe === 'pengeluaran')
-    .reduce((sum, r) => sum + Number((r.data as any).jumlah), 0);
+    .filter(r => (r.data as Record<string, any>).tipe === 'pengeluaran')
+    .reduce((sum, r) => sum + Number((r.data as Record<string, any>).jumlah), 0);
   const totalPemasukan = laporanKeuangan
-    .filter(r => (r.data as any).tipe === 'pemasukan')
-    .reduce((sum, r) => sum + Number((r.data as any).jumlah), 0);
+    .filter(r => (r.data as Record<string, any>).tipe === 'pemasukan')
+    .reduce((sum, r) => sum + Number((r.data as Record<string, any>).jumlah), 0);
 
   // Menghitung rata-rata progres
   const laporanProgres = program.laporanProgres.filter(r => r.tipeLaporan === 'PROGRES_RUTIN');
   const rataRataProgres = laporanProgres.length > 0 
-    ? laporanProgres.reduce((sum, r) => sum + Number((r.data as any).persentaseProgres), 0) / laporanProgres.length 
+    ? laporanProgres.reduce((sum, r) => sum + Number((r.data as Record<string, any>).persentaseProgres), 0) / laporanProgres.length
     : 0;
 
   return (
@@ -163,7 +157,7 @@ export function LpjDocument({ program }: { program: ProgramWithDetails }) {
           <Text style={styles.text}>Total Laporan Progres: {laporanProgres.length} laporan</Text>
           <Text style={styles.text}>Rata-rata Progres: {rataRataProgres.toFixed(1)}%</Text>
           <Text style={styles.text}>Total Laporan Keuangan: {laporanKeuangan.length} transaksi</Text>
-          <Text style={styles.text}>Total Laporan Masalah: {program.laporanProgres.filter(r => r.tipeLaporan === 'MASALAH_KENDALA').length} laporan</Text>
+          <Text style={styles.text}>Total Laporan Masalah: {program.laporanProgres.filter(r => r.tipeLaporan === 'INSIDEN_KENDALA').length} laporan</Text>
         </View>
 
         <View style={styles.section} wrap={false}>
@@ -185,7 +179,7 @@ export function LpjDocument({ program }: { program: ProgramWithDetails }) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>VI. KESIMPULAN</Text>
           <Text style={styles.text}>
-            Program "{program.judul}" telah {program.status === 'SELESAI' ? 'selesai dilaksanakan' : 'berjalan'} 
+            Program &ldquo;{program.judul}&rdquo; telah {program.status === 'SELESAI' ? 'selesai dilaksanakan' : 'berjalan'}
             dengan total anggaran Rp {Number(program.anggaranFinal).toLocaleString('id-ID')} 
             dan telah menghasilkan {program.laporanProgres.length} laporan progres.
           </Text>

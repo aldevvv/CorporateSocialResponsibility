@@ -37,7 +37,7 @@ export async function POST(
     }
 
     // Generate PDF using TorDocument component
-    const pdfBuffer = await renderToBuffer(React.createElement(TorDocument, { proposal }) as any);
+    const pdfBuffer = await renderToBuffer(React.createElement(TorDocument, { proposal }));
 
     // Return PDF as downloadable file
     return new NextResponse(pdfBuffer, {

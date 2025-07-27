@@ -97,14 +97,14 @@ export default function AdminGuidePage() {
         
         <h2>2. Siklus Hidup Proposal (Tahap 1)</h2>
         
-        <p>Ini adalah alur kerja utama untuk mengelola usulan program dari ide hingga persetujuan. Semua ini terjadi di menu <strong>&quot;Manajemen Proposal&quot;</strong>.</p>
+        <p>Ini adalah alur kerja utama untuk mengelola usulan program dari ide hingga persetujuan. Semua ini terjadi di menu <strong>&ldquo;Manajemen Proposal&rdquo;</strong>.</p>
         
         <h3>Langkah 1: Membuat Proposal Baru</h3>
         <ol>
-          <li>Klik menu <strong>"Manajemen Proposal"</strong> di sidebar.</li>
-          <li>Klik tombol <strong>"+ Buat Proposal Baru"</strong> di pojok kanan atas.</li>
+          <li>Klik menu <strong>&ldquo;Manajemen Proposal&rdquo;</strong> di sidebar.</li>
+          <li>Klik tombol <strong>&ldquo;+ Buat Proposal Baru&rdquo;</strong> di pojok kanan atas.</li>
           <li>Isi formulir secara lengkap dan detail. Semua field wajib diisi untuk memastikan kualitas data.</li>
-          <li>Klik <strong>"Simpan sebagai Draft"</strong>. Proposal Anda kini tersimpan di sistem dengan status <code>DRAFT</code>.</li>
+          <li>Klik <strong>&ldquo;Simpan sebagai Draft&rdquo;</strong>. Proposal Anda kini tersimpan di sistem dengan status <code>DRAFT</code>.</li>
         </ol>
         
         <h3>Langkah 2: Mengajukan & Memantau Status Proposal</h3>
@@ -121,7 +121,7 @@ export default function AdminGuidePage() {
         <ol>
           <li>Cari proposal yang berstatus <code>DRAFT</code>.</li>
           <li>Klik <strong>ikon tiga titik (menu aksi)</strong> di ujung kanan barisnya.</li>
-          <li>Pilih <strong>"Ajukan Proposal"</strong>. Status akan berubah menjadi <code>DIAJUKAN</code>.</li>
+          <li>Pilih <strong>&ldquo;Ajukan Proposal&rdquo;</strong>. Status akan berubah menjadi <code>DIAJUKAN</code>.</li>
         </ol>
         
         <h3>Langkah 3: Menyetujui atau Menolak Proposal</h3>
@@ -130,8 +130,8 @@ export default function AdminGuidePage() {
           <li>Buka halaman <strong>Detail Proposal</strong> dengan mengklik judulnya, atau gunakan <strong>menu aksi</strong>.</li>
           <li>Setelah mengevaluasi semua detail, pilih salah satu aksi:
             <ul>
-              <li><strong>"Setujui"</strong>: Untuk menerima proposal. Status akan berubah menjadi <code>DISETUJUI</code>.</li>
-              <li><strong>"Tolak"</strong>: Untuk menolak proposal. Status akan berubah menjadi <code>DITOLAK</code>.</li>
+              <li><strong>&ldquo;Setujui&rdquo;</strong>: Untuk menerima proposal. Status akan berubah menjadi <code>DISETUJUI</code>.</li>
+              <li><strong>&ldquo;Tolak&rdquo;</strong>: Untuk menolak proposal. Status akan berubah menjadi <code>DITOLAK</code>.</li>
             </ul>
           </li>
         </ol>
@@ -140,7 +140,7 @@ export default function AdminGuidePage() {
         <p>Setelah proposal disetujui, sistem dapat membuatkan dokumen TOR (Term of Reference) secara otomatis.</p>
         <ol>
           <li>Cari proposal yang berstatus <code>DISETUJUI</code>.</li>
-          <li>Klik <strong>menu aksi</strong>, lalu pilih <strong>"Generate TOR"</strong>.</li>
+          <li>Klik <strong>menu aksi</strong>, lalu pilih <strong>&ldquo;Generate TOR&rdquo;</strong>.</li>
           <li>Sebuah file PDF akan otomatis terunduh, berisi detail proposal dalam format TOR standar.</li>
         </ol>
         
@@ -153,7 +153,7 @@ export default function AdminGuidePage() {
         <h3>Langkah 1: Konversi Proposal menjadi Program Resmi</h3>
         <ol>
           <li>Cari proposal yang berstatus <code>DISETUJUI</code>.</li>
-          <li>Klik <strong>menu aksi</strong>, lalu pilih <strong>"Konversi menjadi Program"</strong>.</li>
+          <li>Klik <strong>menu aksi</strong>, lalu pilih <strong>&ldquo;Konversi menjadi Program&rdquo;</strong>.</li>
           <li>Anda akan diarahkan ke form finalisasi. Di sini Anda wajib mengisi:
             <ul>
               <li><strong>Anggaran Final</strong> yang dialokasikan.</li>
@@ -161,21 +161,21 @@ export default function AdminGuidePage() {
               <li><strong>Penanggung Jawab (User)</strong> yang akan melaksanakan program di lapangan.</li>
             </ul>
           </li>
-          <li>Klik <strong>"Simpan"</strong>. Proposal lama akan berubah status menjadi <code>DIJALANKAN</code>, dan sebuah <strong>Program Resmi</strong> baru akan dibuat dan muncul di menu <strong>"Program Berjalan"</strong>.</li>
+          <li>Klik <strong>&ldquo;Simpan&rdquo;</strong>. Proposal lama akan berubah status menjadi <code>DIJALANKAN</code>, dan sebuah <strong>Program Resmi</strong> baru akan dibuat dan muncul di menu <strong>&ldquo;Program Berjalan&rdquo;</strong>.</li>
         </ol>
         
         <h3>Langkah 2: Memantau Laporan Progres</h3>
         <ol>
-          <li>Klik menu <strong>"Program Berjalan"</strong> di sidebar.</li>
+          <li>Klik menu <strong>&ldquo;Program Berjalan&rdquo;</strong> di sidebar.</li>
           <li>Klik judul program untuk masuk ke halaman detailnya.</li>
-          <li>Di bagian bawah, Anda akan menemukan <strong>"Riwayat Laporan"</strong>. Di sinilah semua laporan progres dari User Pelaksana (seperti laporan keuangan, insiden, dll.) akan muncul secara real-time.</li>
+          <li>Di bagian bawah, Anda akan menemukan <strong>&ldquo;Riwayat Laporan&rdquo;</strong>. Di sinilah semua laporan progres dari User Pelaksana (seperti laporan keuangan, insiden, dll.) akan muncul secara real-time.</li>
         </ol>
         
         <h3>Langkah 3: Mengelola Dokumen Penting</h3>
         <p>Setiap program memiliki repositori dokumennya sendiri.</p>
         <ol>
           <li>Masuk ke halaman <strong>Detail Program</strong>.</li>
-          <li>Temukan bagian <strong>"Manajemen Dokumen Penting"</strong>.</li>
+          <li>Temukan bagian <strong>&ldquo;Manajemen Dokumen Penting&rdquo;</strong>.</li>
           <li>Gunakan fitur ini untuk mengunggah dan menyimpan file-file formal seperti <strong>MoU, PKS, Surat Resmi, atau foto dokumentasi penting</strong>.</li>
         </ol>
         
@@ -183,8 +183,8 @@ export default function AdminGuidePage() {
         <p>Setelah program selesai di lapangan:</p>
         <ol>
           <li>Masuk ke halaman <strong>Detail Program</strong>.</li>
-          <li>Klik tombol <strong>"Tandai sebagai Selesai"</strong>. Status program akan berubah menjadi <code>SELESAI</code>.</li>
-          <li>Setelah status berubah, tombol <strong>"Generate LPJ (PDF)"</strong> akan muncul.</li>
+          <li>Klik tombol <strong>&ldquo;Tandai sebagai Selesai&rdquo;</strong>. Status program akan berubah menjadi <code>SELESAI</code>.</li>
+          <li>Setelah status berubah, tombol <strong>&ldquo;Generate LPJ (PDF)&rdquo;</strong> akan muncul.</li>
           <li>Klik tombol tersebut untuk mengunduh Laporan Pertanggungjawaban (LPJ) lengkap yang secara otomatis merangkum semua data program dan riwayat laporannya.</li>
         </ol>
         
@@ -193,16 +193,16 @@ export default function AdminGuidePage() {
         <h2>4. Fitur Lanjutan</h2>
         
         <h3>Halaman Insights</h3>
-        <p>Menu <strong>"Insights"</strong> adalah pusat analisis data Anda.</p>
+        <p>Menu <strong>&ldquo;Insights&rdquo;</strong> adalah pusat analisis data Anda.</p>
         <ul>
           <li><strong>Laporan Template:</strong> Menghasilkan laporan terstruktur secara otomatis, seperti analisis anggaran atau daftar program berisiko.</li>
-          <li><strong>AI Insight:</strong> Ajukan pertanyaan dalam bahasa natural (contoh: "Berapa total anggaran untuk pilar lingkungan?") dan biarkan AI menganalisis dan menjawabnya untuk Anda.</li>
+          <li><strong>AI Insight:</strong> Ajukan pertanyaan dalam bahasa natural (contoh: &ldquo;Berapa total anggaran untuk pilar lingkungan?&rdquo;) dan biarkan AI menganalisis dan menjawabnya untuk Anda.</li>
         </ul>
         
         <h3>Manajemen Akun</h3>
         <ol>
           <li>Klik <strong>nama dan foto profil Anda</strong> di pojok kanan atas header.</li>
-          <li>Pilih <strong>"Pengaturan Akun"</strong>.</li>
+          <li>Pilih <strong>&ldquo;Pengaturan Akun&rdquo;</strong>.</li>
           <li>Di halaman ini, Anda dapat mengubah nama, foto profil, email, dan password Anda.</li>
         </ol>
       </div>

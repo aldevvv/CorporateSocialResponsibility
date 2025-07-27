@@ -8,13 +8,24 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2, X, MessageSquare } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface PromptFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  editData?: any;
+  editData?: {
+    id: string;
+    name: string;
+    description?: string;
+    systemPrompt: string;
+    userPrompt: string;
+    apiKeyId: string;
+    model: string;
+    temperature: number;
+    maxTokens: number;
+    category: string;
+  };
 }
 
 const PROMPT_CATEGORIES = [
@@ -38,7 +49,13 @@ export default function PromptForm({ isOpen, onClose, onSuccess, editData }: Pro
     category: editData?.category || 'GENERAL',
   });
   const [loading, setLoading] = useState(false);
-  const [apiKeys, setApiKeys] = useState([]);
+  const [apiKeys, setApiKeys] = useState<Array<{
+    id: string;
+    name: string;
+    provider: string;
+    isActive: boolean;
+    availableModels: string[];
+  }>>([]);
   const [availableModels, setAvailableModels] = useState<string[]>([]);
 
   useEffect(() => {
@@ -49,23 +66,23 @@ export default function PromptForm({ isOpen, onClose, onSuccess, editData }: Pro
 
   useEffect(() => {
     if (formData.apiKeyId) {
-      const selectedApiKey = apiKeys.find((key: any) => key.id === formData.apiKeyId);
+      const selectedApiKey = apiKeys.find(key => key.id === formData.apiKeyId);
       if (selectedApiKey) {
-        setAvailableModels((selectedApiKey as any).availableModels || []);
+        setAvailableModels(selectedApiKey.availableModels || []);
         // Reset model if it's not available in the new API key
-        if (formData.model && !(selectedApiKey as any).availableModels?.includes(formData.model)) {
+        if (formData.model && !selectedApiKey.availableModels?.includes(formData.model)) {
           setFormData(prev => ({ ...prev, model: '' }));
         }
       }
     }
-  }, [formData.apiKeyId, apiKeys]);
+  }, [formData.apiKeyId, formData.model, apiKeys]);
 
   const fetchApiKeys = async () => {
     try {
       const response = await fetch('/api/ai-settings/api-keys');
       if (response.ok) {
         const data = await response.json();
-        setApiKeys(data.filter((key: any) => key.isActive));
+        setApiKeys(data.filter((key: { isActive: boolean }) => key.isActive));
       }
     } catch (error) {
       console.error('Error fetching API keys:', error);
@@ -194,7 +211,7 @@ export default function PromptForm({ isOpen, onClose, onSuccess, editData }: Pro
                     <SelectValue placeholder="Pilih API Key" />
                   </SelectTrigger>
                   <SelectContent>
-                    {apiKeys.map((apiKey: any) => (
+                    {apiKeys.map((apiKey) => (
                       <SelectItem key={apiKey.id} value={apiKey.id}>
                         <div>
                           <div className="font-medium">{apiKey.name}</div>

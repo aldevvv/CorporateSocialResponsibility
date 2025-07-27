@@ -13,7 +13,12 @@ interface ApiKeyFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  editData?: any;
+  editData?: {
+    id: string;
+    name: string;
+    provider: string;
+    baseUrl?: string;
+  };
 }
 
 const AI_PROVIDERS = [

@@ -195,9 +195,9 @@ export function Sidebar() {
                 <p className="font-medium text-sm">
                   {item.name}
                 </p>
-                {(item as any).description && (
+                {'description' in item && item.description && (
                   <p className="text-xs text-blue-200 mt-0.5 truncate opacity-80">
-                    {(item as any).description}
+                    {item.description}
                   </p>
                 )}
               </div>

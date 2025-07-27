@@ -234,7 +234,7 @@ export function TorDocument({ proposal }: TorDocumentProps) {
         <View style={styles.documentHeader}>
           <Text style={styles.documentTitle}>TERMS OF REFERENCE (TOR)</Text>
           <Text style={styles.documentSubtitle}>PROGRAM TANGGUNG JAWAB SOSIAL DAN LINGKUNGAN</Text>
-          <Text style={styles.documentSubtitle}>"{proposal.judul}"</Text>
+          <Text style={styles.documentSubtitle}>&ldquo;{proposal.judul}&rdquo;</Text>
         </View>
 
         {/* INFORMASI DASAR */}
@@ -247,14 +247,14 @@ export function TorDocument({ proposal }: TorDocumentProps) {
           <View style={styles.tableRow}>
             <Text style={styles.tableLabel}>Pilar TJSL</Text>
             <Text style={styles.tableColon}>:</Text>
-            <Text style={styles.tableValue}>{(proposal as any).pilar?.toString().replace(/_/g, ' ') || 'Tidak tersedia'}</Text>
+            <Text style={styles.tableValue}>{proposal.pilar?.toString().replace(/_/g, ' ') || 'Tidak tersedia'}</Text>
           </View>
           <View style={styles.tableRow}>
             <Text style={styles.tableLabel}>Lokasi</Text>
             <Text style={styles.tableColon}>:</Text>
             <Text style={styles.tableValue}>
-              Kab/Kota: {(proposal as any).lokasiKabupaten || 'Tidak tersedia'},
-              Kecamatan: {(proposal as any).lokasiKecamatan || 'Tidak tersedia'}
+              Kab/Kota: {proposal.lokasiKabupaten || 'Tidak tersedia'},
+              Kecamatan: {proposal.lokasiKecamatan || 'Tidak tersedia'}
             </Text>
           </View>
           <View style={styles.tableRow}>
@@ -283,22 +283,22 @@ export function TorDocument({ proposal }: TorDocumentProps) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>III. TARGET DAN PENERIMA MANFAAT</Text>
           <Text style={styles.text}>
-            Target Penerima Manfaat: {(proposal as any).targetPenerimaManfaat || 'Tidak tersedia'}{'\n'}
-            Jumlah Penerima Manfaat: {(proposal as any).jumlahPenerimaManfaat || 'Tidak tersedia'} Orang/KK
+            Target Penerima Manfaat: {proposal.targetPenerimaManfaat || 'Tidak tersedia'}{'\n'}
+            Jumlah Penerima Manfaat: {proposal.jumlahPenerimaManfaat || 'Tidak tersedia'} Orang/KK
           </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>IV. INDIKATOR KEBERHASILAN</Text>
-          <Text style={styles.text}>{(proposal as any).indikatorKeberhasilan || 'Tidak tersedia'}</Text>
+          <Text style={styles.text}>{proposal.indikatorKeberhasilan || 'Tidak tersedia'}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>V. ANGGARAN DAN JADWAL PELAKSANAAN</Text>
           <Text style={styles.text}>
-            Estimasi Anggaran: {(proposal as any).estimasiAnggaran ? formatCurrency(Number((proposal as any).estimasiAnggaran)) : 'Tidak tersedia'}{'\n'}
-            Perkiraan Tanggal Mulai: {(proposal as any).perkiraanMulai ? formatDate((proposal as any).perkiraanMulai) : 'Tidak tersedia'}{'\n'}
-            Perkiraan Tanggal Selesai: {(proposal as any).perkiraanSelesai ? formatDate((proposal as any).perkiraanSelesai) : 'Tidak tersedia'}
+            Estimasi Anggaran: {proposal.estimasiAnggaran ? formatCurrency(Number(proposal.estimasiAnggaran)) : 'Tidak tersedia'}{'\n'}
+            Perkiraan Tanggal Mulai: {proposal.perkiraanMulai ? formatDate(proposal.perkiraanMulai) : 'Tidak tersedia'}{'\n'}
+            Perkiraan Tanggal Selesai: {proposal.perkiraanSelesai ? formatDate(proposal.perkiraanSelesai) : 'Tidak tersedia'}
           </Text>
         </View>
 

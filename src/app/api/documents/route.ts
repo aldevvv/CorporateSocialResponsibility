@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
   const file = formData.get('file') as File;
   const programId = formData.get('programId') as string;
   const userId = formData.get('userId') as string;
-  const tipeDokumen = formData.get('tipeDokumen') as any;
+  const tipeDokumen = formData.get('tipeDokumen') as string;
 
   if (!file || !programId || !userId) {
     return NextResponse.json({ error: "Data tidak lengkap" }, { status: 400 });

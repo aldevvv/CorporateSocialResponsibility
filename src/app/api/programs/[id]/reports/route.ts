@@ -47,7 +47,22 @@ export async function GET(
     }
 
     // Build where clause for filtering
-    const whereClause: any = {
+    const whereClause: {
+      programId: string;
+      tipeLaporan?: string;
+      OR?: Array<{
+        createdBy?: {
+          name?: {
+            contains: string;
+            mode: 'insensitive';
+          };
+        };
+        tipeLaporan?: {
+          contains: string;
+          mode: 'insensitive';
+        };
+      }>;
+    } = {
       programId: id,
     };
 

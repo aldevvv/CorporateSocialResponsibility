@@ -4,7 +4,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Users, BookOpen } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 export default function UserGuidePage() {
   const { data: session, status } = useSession();
@@ -57,7 +57,7 @@ export default function UserGuidePage() {
         
         <h2>1. Mengenal Halaman Utama Anda</h2>
         
-        <p>Setelah Anda login, Anda akan langsung diarahkan ke halaman <strong>"Program yang Saya Tangani"</strong>. Halaman ini adalah pusat kerja Anda.</p>
+        <p>Setelah Anda login, Anda akan langsung diarahkan ke halaman <strong>&ldquo;Program yang Saya Tangani&rdquo;</strong>. Halaman ini adalah pusat kerja Anda.</p>
         
         <ul>
           <li><strong>Daftar Program:</strong> Anda akan melihat sebuah tabel yang berisi semua program yang secara resmi menjadi tanggung jawab Anda.</li>
@@ -75,7 +75,7 @@ export default function UserGuidePage() {
         
         <h3>Langkah 2: Membuat Laporan Baru</h3>
         <ol>
-          <li>Di halaman detail program, cari bagian <strong>"Buat Laporan Baru"</strong>.</li>
+          <li>Di halaman detail program, cari bagian <strong>&ldquo;Buat Laporan Baru&rdquo;</strong>.</li>
           <li>Langkah pertama adalah <strong>memilih jenis laporan</strong> dari menu dropdown yang tersedia.</li>
           <li>Setelah Anda memilih jenis laporan, formulir yang sesuai akan muncul di bawahnya.</li>
         </ol>
@@ -101,7 +101,7 @@ export default function UserGuidePage() {
           
           <li><strong>PENCAPAIAN MILESTONE</strong>
             <ul>
-              <li><strong>Kapan digunakan:</strong> Ketika sebuah target atau capaian penting dalam program berhasil diraih. Contoh: "Pembangunan fondasi selesai", "Penyerahan bantuan tahap 1", "Peserta pelatihan lulus".</li>
+              <li><strong>Kapan digunakan:</strong> Ketika sebuah target atau capaian penting dalam program berhasil diraih. Contoh: &ldquo;Pembangunan fondasi selesai&rdquo;, &ldquo;Penyerahan bantuan tahap 1&rdquo;, &ldquo;Peserta pelatihan lulus&rdquo;.</li>
               <li><strong>Isi:</strong> Jelaskan milestone yang tercapai dan jumlah penerima manfaat baru (jika ada).</li>
             </ul>
           </li>
@@ -122,7 +122,7 @@ export default function UserGuidePage() {
         </ul>
         
         <h3>Langkah 4: Melihat Riwayat Laporan Anda</h3>
-        <p>Setiap laporan yang berhasil Anda kirim akan langsung muncul di bagian <strong>"Riwayat Laporan"</strong> di halaman yang sama. Anda bisa meninjau kembali semua laporan yang pernah Anda buat di sini.</p>
+        <p>Setiap laporan yang berhasil Anda kirim akan langsung muncul di bagian <strong>&ldquo;Riwayat Laporan&rdquo;</strong> di halaman yang sama. Anda bisa meninjau kembali semua laporan yang pernah Anda buat di sini.</p>
         
         <hr />
         
@@ -131,7 +131,7 @@ export default function UserGuidePage() {
         <p>Anda bisa mengelola data pribadi Anda.</p>
         <ol>
           <li>Klik <strong>nama dan foto profil Anda</strong> di pojok kanan atas header.</li>
-          <li>Pilih <strong>"Pengaturan Akun"</strong>.</li>
+          <li>Pilih <strong>&ldquo;Pengaturan Akun&rdquo;</strong>.</li>
           <li>Di halaman ini, Anda dapat mengubah <strong>nama, foto profil, email, dan password</strong> Anda. Pastikan untuk memasukkan password saat ini jika Anda ingin mengubah email atau password.</li>
         </ol>
       </div>
