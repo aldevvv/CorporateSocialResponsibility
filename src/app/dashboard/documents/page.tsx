@@ -1,6 +1,6 @@
 // app/dashboard/documents/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 
@@ -8,14 +8,14 @@ const prisma = new PrismaClient();
 
 export default async function DocumentsPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string } }).user) {
     redirect('/login');
   }
 
   // Check if user has a program assigned
   const program = await prisma.program.findFirst({
     where: {
-      penanggungJawabId: session.user.id,
+      penanggungJawabId: (session as { user: { id: string } }).user.id,
     },
   });
 
