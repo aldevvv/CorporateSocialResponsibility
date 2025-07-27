@@ -673,7 +673,7 @@ export default function AISettingsPage() {
           isOpen={showApiKeyForm}
           onClose={handleFormClose}
           onSuccess={handleFormSuccess}
-          editData={editingApiKey}
+          editData={editingApiKey || undefined}
         />
 
         {/* Prompt Form Modal */}
