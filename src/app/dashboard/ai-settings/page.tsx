@@ -88,7 +88,7 @@ export default function AISettingsPage() {
       return;
     }
 
-    if (session.user.role !== 'ADMIN') {
+    if (!session.user || session.user.role !== 'ADMIN') {
       router.push('/dashboard');
       return;
     }
