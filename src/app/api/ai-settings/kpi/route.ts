@@ -1,6 +1,6 @@
 // app/api/ai-settings/kpi/route.ts
 import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@prisma/client';
 
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 // GET - Fetch KPI data for AI Settings (current active API key and prompt)
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role: string; name?: string; email?: string } } | null;
     
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
