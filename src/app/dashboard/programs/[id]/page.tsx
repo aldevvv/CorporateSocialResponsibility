@@ -1,6 +1,6 @@
 // app/dashboard/programs/[id]/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -112,7 +112,7 @@ function getStatusBadgeClassName(status: string) {
 
 export default async function ProgramDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string; role: string } }).user) {
     redirect('/login');
   }
 
@@ -124,8 +124,8 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
   }
 
   // Check access rights
-  const isResponsible = program.penanggungJawabId === session.user.id;
-  const isAdmin = session.user.role === 'ADMIN';
+  const isResponsible = program.penanggungJawabId === (session as { user: { id: string; role: string } }).user.id;
+  const isAdmin = (session as { user: { role: string } }).user.role === 'ADMIN';
 
   if (!isAdmin && !isResponsible) {
     return (

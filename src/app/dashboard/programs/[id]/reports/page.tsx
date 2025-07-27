@@ -40,7 +40,7 @@ async function getProgramReports(id: string) {
 
 export default async function ProgramReportsPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions) as { user: { id: string; role: string } } | null;
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string; role: string } }).user) {
     redirect('/login');
   }
 
@@ -52,8 +52,8 @@ export default async function ProgramReportsPage({ params }: { params: Promise<{
   }
 
   // Check access rights
-  const isResponsible = program.penanggungJawabId === session.user.id;
-  const isAdmin = session.user.role === 'ADMIN';
+  const isResponsible = program.penanggungJawabId === (session as { user: { id: string; role: string } }).user.id;
+  const isAdmin = (session as { user: { role: string } }).user.role === 'ADMIN';
 
   if (!isAdmin && !isResponsible) {
     return (

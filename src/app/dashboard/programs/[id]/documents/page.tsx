@@ -1,6 +1,6 @@
 // app/dashboard/programs/[id]/documents/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -38,7 +38,7 @@ async function getProgramDocuments(id: string) {
 
 export default async function ProgramDocumentsPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string; role: string } }).user) {
     redirect('/login');
   }
 
@@ -50,8 +50,8 @@ export default async function ProgramDocumentsPage({ params }: { params: Promise
   }
 
   // Check access rights
-  const isResponsible = program.penanggungJawabId === session.user.id;
-  const isAdmin = session.user.role === 'ADMIN';
+  const isResponsible = program.penanggungJawabId === (session as { user: { id: string; role: string } }).user.id;
+  const isAdmin = (session as { user: { role: string } }).user.role === 'ADMIN';
 
   if (!isAdmin && !isResponsible) {
     return (
@@ -108,7 +108,7 @@ export default async function ProgramDocumentsPage({ params }: { params: Promise
         
         <ManajemenDokumen 
           programId={program.id} 
-          userId={session.user.id} 
+          userId={(session as { user: { id: string } }).user.id}
           dokumen={program.dokumenPenting} 
         />
       </div>

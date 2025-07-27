@@ -1,6 +1,6 @@
 // app/dashboard/my-programs/page.tsx
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,11 +55,11 @@ async function getMyPrograms(userId: string) {
 
 export default async function MyProgramsPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string } }).user) {
     redirect('/login');
   }
 
-  const programs = await getMyPrograms(session.user.id);
+  const programs = await getMyPrograms((session as { user: { id: string } }).user.id);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">

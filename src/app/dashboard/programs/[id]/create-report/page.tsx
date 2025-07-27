@@ -30,7 +30,7 @@ async function getProgram(id: string) {
 
 export default async function CreateReportPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions) as { user: { id: string } } | null;
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string } }).user) {
     redirect('/login');
   }
 
@@ -42,7 +42,7 @@ export default async function CreateReportPage({ params }: { params: Promise<{ i
   }
 
   // Check access rights - hanya penanggung jawab yang bisa buat laporan
-  const isResponsible = program.penanggungJawabId === session.user.id;
+  const isResponsible = program.penanggungJawabId === (session as { user: { id: string } }).user.id;
 
   if (!isResponsible) {
     return (
