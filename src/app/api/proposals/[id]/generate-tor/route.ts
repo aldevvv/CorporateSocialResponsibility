@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -18,8 +18,9 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const proposal = await prisma.programProposal.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         createdBy: {
           select: { name: true, email: true }
@@ -36,7 +37,7 @@ export async function POST(
     }
 
     // Generate PDF using TorDocument component
-    const pdfBuffer = await renderToBuffer(React.createElement(TorDocument, { proposal }));
+    const pdfBuffer = await renderToBuffer(React.createElement(TorDocument, { proposal }) as any);
 
     // Return PDF as downloadable file
     return new NextResponse(pdfBuffer, {

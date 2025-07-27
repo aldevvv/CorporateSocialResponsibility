@@ -1,12 +1,17 @@
 // app/api/documents/route.ts
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { createClient } from '@supabase/supabase-js';
 
 const prisma = new PrismaClient();
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_KEY!
+);
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-
+  
   const file = formData.get('file') as File;
   const programId = formData.get('programId') as string;
   const userId = formData.get('userId') as string;
@@ -17,28 +22,35 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // 1. Baca file menjadi buffer
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    const filename = `${programId}/${Date.now()}-${file.name}`;
 
-    // 2. Konversi buffer ke string Base64
-    const base64Content = buffer.toString('base64');
+    // 1. Upload file ke Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from('dokumen-tjsl') // Nama bucket untuk dokumen
+      .upload(filename, file);
 
-    // 3. Simpan semua data ke database
+    if (uploadError) {
+      throw new Error(`Supabase Upload Error: ${uploadError.message}`);
+    }
+
+    // 2. Dapatkan URL publik dari file yang baru di-upload
+    const { data } = supabase.storage
+      .from('dokumen-tjsl')
+      .getPublicUrl(filename);
+
+    // 3. Simpan metadata (TERMASUK URL) ke database PostgreSQL via Prisma
     const doc = await prisma.dokumenProgram.create({
       data: {
         namaDokumen: file.name,
-        tipeDokumen: tipeDokumen || 'LAINNYA',
-        mimeType: file.type,
-        fileContent: base64Content,
+        tipeDokumen: tipeDokumen || 'LAINNYA', // Sesuaikan jika perlu
+        urlDokumen: data.publicUrl, // Simpan URL, bukan konten file
+        kunciFile: filename, // Simpan path/key untuk manajemen file nanti
         programId: programId,
         uploadedById: userId,
       }
     });
 
-    // Jangan kembalikan konten file di respons JSON
-    const { fileContent, ...result } = doc; 
-    return NextResponse.json(result, { status: 201 });
+    return NextResponse.json(doc, { status: 201 });
 
   } catch (error) {
     console.error(error);

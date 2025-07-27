@@ -50,7 +50,6 @@ export function Header() {
                 </p>
               </div>
               <Avatar className="h-9 w-9 ring-2 ring-white/20">
-                <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
                 <AvatarFallback className="bg-gradient-to-br from-white to-blue-100 text-[#1E40AF] font-semibold">
                   {userInitials}
                 </AvatarFallback>
@@ -61,7 +60,6 @@ export function Header() {
             <DropdownMenuLabel className="p-3">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
                   <AvatarFallback className="bg-gradient-to-br from-[#1E40AF] to-[#1E3A8A] text-white">
                     {userInitials}
                   </AvatarFallback>

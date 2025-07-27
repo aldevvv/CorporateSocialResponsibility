@@ -56,12 +56,12 @@ export const authOptions: NextAuthOptions = {
           }
 
           console.log('✅ Password valid, authentication successful')
+          
           return {
             id: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
-            image: user.image, // Pastikan image disertakan
           }
         } catch (error) {
           console.error('❌ Auth error:', error)
@@ -75,16 +75,15 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.name = user.name;
-        token.email = user.email;
-        token.picture = user.image;
+        token.name = user.name || undefined;
+        token.email = user.email || undefined;
       }
       // Update token jika ada update session
       if (trigger === "update" && session?.user) {
         token.name = session.user.name;
         token.email = session.user.email;
-        token.picture = session.user.image;
       }
+      
       return token;
     },
     session({ session, token }) {
@@ -93,8 +92,8 @@ export const authOptions: NextAuthOptions = {
         session.user.role = token.role as string;
         session.user.name = token.name as string || session.user.name;
         session.user.email = token.email as string || session.user.email;
-        session.user.image = token.picture as string || session.user.image;
       }
+      
       return session;
     },
   },

@@ -17,15 +17,8 @@ export async function GET(
       return NextResponse.json({ error: 'Dokumen tidak ditemukan' }, { status: 404 });
     }
 
-    // 1. Konversi Base64 kembali ke buffer
-    const buffer = Buffer.from(doc.fileContent, 'base64');
-
-    // 2. Siapkan headers untuk download
-    const headers = new Headers();
-    headers.set('Content-Type', doc.mimeType);
-    headers.set('Content-Disposition', `attachment; filename="${doc.namaDokumen}"`);
-
-    return new NextResponse(buffer, { headers });
+    // Redirect ke URL Supabase Storage
+    return NextResponse.redirect(doc.urlDokumen);
 
   } catch (error) {
     console.error(error);

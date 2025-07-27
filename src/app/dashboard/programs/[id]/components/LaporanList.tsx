@@ -5,22 +5,34 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { 
-  Pagination, 
-  PaginationContent, 
-  PaginationItem, 
-  PaginationLink, 
-  PaginationNext, 
-  PaginationPrevious 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious
 } from '@/components/ui/pagination';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select';
-import { Search, Filter } from 'lucide-react';
+import {
+  Search,
+  Filter,
+  FileText,
+  Calendar,
+  User,
+  TrendingUp,
+  DollarSign,
+  AlertTriangle,
+  Target,
+  Activity,
+  Clock
+} from 'lucide-react';
 
 interface LaporanProgres {
   id: string;
@@ -149,6 +161,40 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
     }
   };
 
+  const getReportTypeBadgeClassName = (type: string) => {
+    switch (type) {
+      case 'PROGRES_RUTIN':
+        return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
+      case 'PENCAPAIAN_MILESTONE':
+        return 'bg-green-100 text-green-800 hover:bg-green-200';
+      case 'KEUANGAN':
+        return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
+      case 'INSIDEN_KENDALA':
+        return 'bg-red-100 text-red-800 hover:bg-red-200';
+      case 'KEGIATAN_KHUSUS':
+        return 'bg-orange-100 text-orange-800 hover:bg-orange-200';
+      default:
+        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+    }
+  };
+
+  const getReportTypeIcon = (type: string) => {
+    switch (type) {
+      case 'PROGRES_RUTIN':
+        return <TrendingUp className="h-4 w-4" />;
+      case 'PENCAPAIAN_MILESTONE':
+        return <Target className="h-4 w-4" />;
+      case 'KEUANGAN':
+        return <DollarSign className="h-4 w-4" />;
+      case 'INSIDEN_KENDALA':
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'KEGIATAN_KHUSUS':
+        return <Activity className="h-4 w-4" />;
+      default:
+        return <FileText className="h-4 w-4" />;
+    }
+  };
+
   const renderReportContent = (type: string, data: any) => {
     switch (type) {
       case 'PROGRES_RUTIN':
@@ -230,137 +276,184 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
     }
 
     return (
-      <Pagination className="mt-6">
-        <PaginationContent>
-          {pagination.hasPrev && (
-            <PaginationItem>
-              <PaginationPrevious 
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handlePageChange(pagination.currentPage - 1);
-                }}
-              />
-            </PaginationItem>
-          )}
-          
-          {pages.map((page) => (
-            <PaginationItem key={page}>
-              <PaginationLink
-                href="#"
-                isActive={page === pagination.currentPage}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handlePageChange(page);
-                }}
-              >
-                {page}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
-          
-          {pagination.hasNext && (
-            <PaginationItem>
-              <PaginationNext 
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handlePageChange(pagination.currentPage + 1);
-                }}
-              />
-            </PaginationItem>
-          )}
-        </PaginationContent>
-      </Pagination>
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mt-6">
+        <CardContent className="p-4">
+          <Pagination>
+            <PaginationContent>
+              {pagination.hasPrev && (
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(pagination.currentPage - 1);
+                    }}
+                    className="hover:bg-blue-50 hover:text-blue-700"
+                  />
+                </PaginationItem>
+              )}
+              
+              {pages.map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    isActive={page === pagination.currentPage}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(page);
+                    }}
+                    className={page === pagination.currentPage
+                      ? "bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800"
+                      : "hover:bg-blue-50 hover:text-blue-700"
+                    }
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              {pagination.hasNext && (
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePageChange(pagination.currentPage + 1);
+                    }}
+                    className="hover:bg-blue-50 hover:text-blue-700"
+                  />
+                </PaginationItem>
+              )}
+            </PaginationContent>
+          </Pagination>
+        </CardContent>
+      </Card>
     );
   };
 
   return (
     <div className="space-y-6">
       {/* Search and Filter Controls */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Cari laporan berdasarkan pembuat atau jenis..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="pl-10"
-          />
-        </div>
-        
-        <div className="flex gap-2">
-          <Select value={filterType} onValueChange={setFilterType} defaultValue="all">
-            <SelectTrigger className="w-48">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Filter jenis laporan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Jenis</SelectItem>
-              <SelectItem value="PROGRES_RUTIN">Progres Rutin</SelectItem>
-              <SelectItem value="PENCAPAIAN_MILESTONE">Pencapaian Milestone</SelectItem>
-              <SelectItem value="KEUANGAN">Laporan Keuangan</SelectItem>
-              <SelectItem value="INSIDEN_KENDALA">Insiden/Kendala</SelectItem>
-              <SelectItem value="KEGIATAN_KHUSUS">Kegiatan Khusus</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-100">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600" />
+            <Input
+              placeholder="Cari laporan berdasarkan pembuat atau jenis..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="pl-10 bg-white/80 border-blue-200 focus:border-blue-400 focus:ring-blue-400"
+            />
+          </div>
           
-          <Button onClick={handleSearch} disabled={loading}>
-            {loading ? 'Mencari...' : 'Cari'}
-          </Button>
+          <div className="flex gap-2">
+            <Select value={filterType} onValueChange={setFilterType} defaultValue="all">
+              <SelectTrigger className="w-48 bg-white/80 border-blue-200">
+                <Filter className="h-4 w-4 mr-2 text-blue-600" />
+                <SelectValue placeholder="Filter jenis laporan" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Jenis</SelectItem>
+                <SelectItem value="PROGRES_RUTIN">Progres Rutin</SelectItem>
+                <SelectItem value="PENCAPAIAN_MILESTONE">Pencapaian Milestone</SelectItem>
+                <SelectItem value="KEUANGAN">Laporan Keuangan</SelectItem>
+                <SelectItem value="INSIDEN_KENDALA">Insiden/Kendala</SelectItem>
+                <SelectItem value="KEGIATAN_KHUSUS">Kegiatan Khusus</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Button
+              onClick={handleSearch}
+              disabled={loading}
+              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
+            >
+              {loading ? 'Mencari...' : 'Cari'}
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Results Summary */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <FileText className="h-5 w-5 text-blue-600" />
           Riwayat Laporan ({pagination.totalCount})
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-gray-600 flex items-center gap-1">
+          <Clock className="h-4 w-4" />
           Halaman {pagination.currentPage} dari {pagination.totalPages}
         </p>
       </div>
 
       {/* Reports List */}
       {loading ? (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">Memuat laporan...</p>
-        </div>
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-4 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-full flex items-center justify-center animate-pulse">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <p className="text-gray-600">Memuat laporan...</p>
+            </div>
+          </CardContent>
+        </Card>
       ) : reports.length === 0 ? (
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">
-            {searchTerm || (filterType && filterType !== 'all') ? 'Tidak ada laporan yang sesuai dengan pencarian.' : 'Belum ada laporan yang dibuat.'}
-          </p>
-          {!searchTerm && (!filterType || filterType === 'all') && (
-            <p className="text-sm text-muted-foreground mt-2">
-              Mulai buat laporan untuk melacak progres program.
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-blue-100 rounded-full flex items-center justify-center mb-6">
+              <FileText className="h-10 w-10 text-gray-600" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              {searchTerm || (filterType && filterType !== 'all') ? 'Tidak Ada Hasil' : 'Belum Ada Laporan'}
+            </h3>
+            <p className="text-gray-600 text-center max-w-md">
+              {searchTerm || (filterType && filterType !== 'all')
+                ? 'Tidak ada laporan yang sesuai dengan pencarian Anda. Coba ubah kata kunci atau filter.'
+                : 'Belum ada laporan yang dibuat untuk program ini. Mulai buat laporan untuk melacak progres program.'
+              }
             </p>
-          )}
-        </div>
+          </CardContent>
+        </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4">
           {reports.map((report) => (
-            <Card key={report.id}>
-              <CardHeader className="pb-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-base">
-                      <Badge 
-                        variant={getReportTypeBadgeVariant(report.tipeLaporan)}
-                        className="mr-2"
-                      >
-                        {getReportTypeLabel(report.tipeLaporan)}
-                      </Badge>
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Dibuat oleh {report.createdBy.name} pada {formatDate(report.createdAt)}
-                    </p>
+            <Card key={report.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <CardHeader className="border-b border-gray-100">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center">
+                        {getReportTypeIcon(report.tipeLaporan)}
+                      </div>
+                      <div>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Badge
+                            variant={getReportTypeBadgeVariant(report.tipeLaporan)}
+                            className={`${getReportTypeBadgeClassName(report.tipeLaporan)} font-medium`}
+                          >
+                            {getReportTypeLabel(report.tipeLaporan)}
+                          </Badge>
+                        </CardTitle>
+                        <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {report.createdBy.name}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(report.createdAt)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
-                {renderReportContent(report.tipeLaporan, report.data)}
+              <CardContent className="p-6">
+                <div className="bg-gray-50 p-4 rounded-xl">
+                  {renderReportContent(report.tipeLaporan, report.data)}
+                </div>
               </CardContent>
             </Card>
           ))}

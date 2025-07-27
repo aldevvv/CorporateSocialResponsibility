@@ -36,13 +36,14 @@ async function getProgramDocuments(id: string) {
   return program;
 }
 
-export default async function ProgramDocumentsPage({ params }: { params: { id: string } }) {
+export default async function ProgramDocumentsPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     redirect('/login');
   }
 
-  const program = await getProgramDocuments(params.id);
+  const { id } = await params;
+  const program = await getProgramDocuments(id);
 
   if (!program) {
     notFound();
@@ -86,7 +87,7 @@ export default async function ProgramDocumentsPage({ params }: { params: { id: s
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href={`/dashboard/programs/${params.id}`}>
+              <Link href={`/dashboard/programs/${id}`}>
                 {program.judul}
               </Link>
             </BreadcrumbLink>

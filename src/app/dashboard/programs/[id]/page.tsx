@@ -9,7 +9,17 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProgramActions } from './components/ProgramActions';
 import { GenerateLpjButton } from './components/GenerateLpjButton';
-import { FileText, ClipboardList, Upload, Eye } from 'lucide-react';
+import {
+  FileText,
+  ClipboardList,
+  Upload,
+  Eye,
+  Users,
+  MapPin,
+  DollarSign,
+  Calendar,
+  Building2
+} from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,14 +35,12 @@ async function getProgramDetails(id: string) {
   const program = await prisma.program.findUnique({
     where: { id },
     include: {
-      penanggungJawab: {
-        select: { name: true, email: true },
-      },
+      penanggungJawab: true,
       proposalAsal: {
         select: { judul: true, createdBy: { select: { name: true } } },
       },
       laporanProgres: {
-        select: { id: true, tipeLaporan: true, createdAt: true },
+        include: { createdBy: true },
         orderBy: { createdAt: 'desc' },
         take: 5,
       },
@@ -131,47 +139,65 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Breadcrumb Navigation */}
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={isAdmin ? "/dashboard/programs" : "/dashboard/my-programs"}>
-                {isAdmin ? "Program Berjalan" : "Program Saya"}
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>{program.judul}</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="mb-8">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href="/dashboard/overview">Overview</Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link href={isAdmin ? "/dashboard/programs" : "/dashboard/my-programs"}>
+                  {isAdmin ? "Program Berjalan" : "Program Saya"}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{program.judul}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
       {/* Program Header */}
-      <div className="p-6 bg-white rounded-lg shadow">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <Badge 
-              variant={getStatusBadgeVariant(program.status)} 
-              className={`mb-2 ${getStatusBadgeClassName(program.status)}`}
-            >
-              {program.status}
-            </Badge>
-            <h1 className="text-3xl font-bold">{program.judul}</h1>
-            <p className="text-muted-foreground">
-              Penanggung Jawab: {program.penanggungJawab.name} ({program.penanggungJawab.email})
-            </p>
+      <div className="bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] rounded-2xl p-8 text-white shadow-xl mb-8">
+        <div className="flex justify-between items-start">
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
+              <Badge
+                variant={getStatusBadgeVariant(program.status)}
+                className={`${getStatusBadgeClassName(program.status)} border-white/20`}
+              >
+                {program.status}
+              </Badge>
+            </div>
+            <h1 className="text-3xl font-bold mb-3 text-white">{program.judul}</h1>
+            <div className="space-y-2 text-blue-100">
+              <div className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                <span>Penanggung Jawab: {program.penanggungJawab.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span>{program.lokasiKecamatan}, {program.lokasiKabupaten}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                <span>Pilar: {program.pilar.replace(/_/g, ' ')}</span>
+              </div>
+            </div>
           </div>
           {isAdmin && (
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <ProgramActions program={program} />
               <GenerateLpjButton program={program} />
             </div>
@@ -180,150 +206,247 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Anggaran Program</CardTitle>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg hover:shadow-xl transition-shadow">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-blue-700">Anggaran Program</CardTitle>
+              <DollarSign className="w-5 h-5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(Number(program.anggaranFinal.toString()))}</div>
+            <div className="text-2xl font-bold text-blue-900">{formatCurrency(Number(program.anggaranFinal.toString()))}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Total Laporan</CardTitle>
+        
+        <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg hover:shadow-xl transition-shadow">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-green-700">Total Laporan</CardTitle>
+              <ClipboardList className="w-5 h-5 text-green-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{program.laporanProgres.length}</div>
+            <div className="text-2xl font-bold text-green-900">{program.laporanProgres.length}</div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Total Dokumen</CardTitle>
+        
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 shadow-lg hover:shadow-xl transition-shadow">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-purple-700">Total Dokumen</CardTitle>
+              <Upload className="w-5 h-5 text-purple-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{program.dokumenPenting.length}</div>
+            <div className="text-2xl font-bold text-purple-900">{program.dokumenPenting.length}</div>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 shadow-lg hover:shadow-xl transition-shadow">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-orange-700">Penerima Manfaat</CardTitle>
+              <Users className="w-5 h-5 text-orange-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-900">{program.jumlahPenerimaManfaat}</div>
+            <div className="text-xs text-orange-600 mt-1">Orang/KK</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Program Information */}
-      <div className="p-6 bg-white rounded-lg shadow">
-        <h2 className="text-xl font-semibold border-b pb-3 mb-4">Informasi Program</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <DetailItem label="Pilar TJSL" value={program.pilar.replace(/_/g, ' ')} />
-          <DetailItem label="Lokasi Kabupaten/Kota" value={program.lokasiKabupaten} />
-          <DetailItem label="Lokasi Kecamatan" value={program.lokasiKecamatan} />
-        </div>
+      {/* Program Information Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Basic Information */}
+        <Card className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-lg">
+            <div className="flex items-center gap-3">
+              <Building2 className="w-6 h-6" />
+              <CardTitle className="text-xl">Informasi Dasar</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <DetailItem label="Pilar TJSL" value={program.pilar.replace(/_/g, ' ')} />
+            <DetailItem label="Lokasi Kabupaten/Kota" value={program.lokasiKabupaten} />
+            <DetailItem label="Lokasi Kecamatan" value={program.lokasiKecamatan} />
+            <DetailItem label="Penanggung Jawab" value={`${program.penanggungJawab.name} (${program.penanggungJawab.email})`} />
+          </CardContent>
+        </Card>
+
+        {/* Schedule & Budget */}
+        <Card className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow">
+          <CardHeader className="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-t-lg">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6" />
+              <CardTitle className="text-xl">Anggaran & Jadwal</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <DetailItem label="Anggaran Final" value={formatCurrency(Number(program.anggaranFinal.toString()))} />
+            <DetailItem label="Tanggal Mulai" value={formatDate(program.tanggalMulaiFinal)} />
+            <DetailItem label="Tanggal Selesai" value={formatDate(program.tanggalSelesaiFinal)} />
+            <DetailItem label="Jumlah Penerima Manfaat" value={`${program.jumlahPenerimaManfaat} Orang/KK`} />
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="p-6 bg-white rounded-lg shadow">
-        <h2 className="text-xl font-semibold border-b pb-3 mb-4">Detail Program</h2>
-        <div className="space-y-6">
+      {/* Program Details */}
+      <Card className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow mb-8">
+        <CardHeader className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-t-lg">
+          <div className="flex items-center gap-3">
+            <FileText className="w-6 h-6" />
+            <CardTitle className="text-xl">Detail Program</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 space-y-6">
           <DetailItem label="Latar Belakang" value={program.latarBelakang} />
           <DetailItem label="Tujuan Program" value={program.tujuanProgram} />
           <DetailItem label="Target Penerima Manfaat" value={program.targetPenerimaManfaat} />
-          <DetailItem label="Jumlah Penerima Manfaat" value={`${program.jumlahPenerimaManfaat} Orang/KK`} />
           <DetailItem label="Indikator Keberhasilan (KPI)" value={program.indikatorKeberhasilan} />
-        </div>
-      </div>
-
-      <div className="p-6 bg-white rounded-lg shadow">
-        <h2 className="text-xl font-semibold border-b pb-3 mb-4">Anggaran & Jadwal</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <DetailItem label="Anggaran Final" value={formatCurrency(Number(program.anggaranFinal.toString()))} />
-          <DetailItem label="Tanggal Mulai" value={formatDate(program.tanggalMulaiFinal)} />
-          <DetailItem label="Tanggal Selesai" value={formatDate(program.tanggalSelesaiFinal)} />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Navigation Cards - Only for Admin */}
       {isAdmin && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href={`/dashboard/programs/${id}/reports`}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Riwayat Laporan</CardTitle>
-                <ClipboardList className="h-4 w-4 text-muted-foreground" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Link href={`/dashboard/programs/${id}/reports`}>
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg overflow-hidden bg-white hover:scale-105 cursor-pointer h-full flex flex-col">
+              <div className="h-2 bg-gradient-to-r from-green-500 to-green-600"></div>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                      <ClipboardList className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors">
+                        Riwayat Laporan
+                      </CardTitle>
+                      <p className="text-sm text-gray-600">
+                        {program.laporanProgres.length} laporan tersedia
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
-                  Lihat semua laporan progres yang telah dibuat
+              <CardContent className="flex-1 flex items-end">
+                <p className="text-gray-600 leading-relaxed">
+                  Lihat semua laporan progres yang telah dibuat untuk program ini
                 </p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
 
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-            <Link href={`/dashboard/programs/${id}/documents`}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Manajemen Dokumen</CardTitle>
-                <Upload className="h-4 w-4 text-muted-foreground" />
+          <Link href={`/dashboard/programs/${id}/documents`}>
+            <Card className="group hover:shadow-2xl transition-all duration-500 border-0 shadow-lg overflow-hidden bg-white hover:scale-105 cursor-pointer h-full flex flex-col">
+              <div className="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                      <Upload className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg font-bold text-gray-900 group-hover:text-purple-600 transition-colors">
+                        Manajemen Dokumen
+                      </CardTitle>
+                      <p className="text-sm text-gray-600">
+                        {program.dokumenPenting.length} dokumen tersimpan
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground">
+              <CardContent className="flex-1 flex items-end">
+                <p className="text-gray-600 leading-relaxed">
                   Upload dan kelola dokumen penting program
                 </p>
               </CardContent>
-            </Link>
-          </Card>
+            </Card>
+          </Link>
         </div>
       )}
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Laporan Terbaru</CardTitle>
+      <div className="space-y-8">
+        <Card className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow">
+          <CardHeader className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-t-lg">
+            <div className="flex items-center gap-3">
+              <ClipboardList className="w-6 h-6" />
+              <CardTitle className="text-xl">Laporan Terbaru</CardTitle>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {program.laporanProgres.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {program.laporanProgres.slice(0, 5).map((laporan) => (
-                  <div key={laporan.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium">{laporan.tipeLaporan.replace(/_/g, ' ')}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatDate(new Date(laporan.createdAt))}
+                  <div key={laporan.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900">{laporan.tipeLaporan.replace(/_/g, ' ')}</p>
+                      <p className="text-sm text-gray-600">
+                        {formatDate(new Date(laporan.createdAt))} • oleh {laporan.createdBy.name}
                       </p>
                     </div>
                   </div>
                 ))}
                 <Link href={`/dashboard/programs/${id}/reports`}>
-                  <Button variant="outline" size="sm" className="w-full mt-3">
+                  <Button variant="outline" size="sm" className="w-full mt-4 border-blue-200 text-blue-600 hover:bg-blue-50">
                     Lihat Semua Laporan
                   </Button>
                 </Link>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Belum ada laporan</p>
+              <div className="text-center py-8">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <ClipboardList className="w-6 h-6 text-gray-400" />
+                </div>
+                <p className="text-gray-600">Belum ada laporan</p>
+                <p className="text-sm text-gray-500 mt-1">Laporan akan muncul di sini setelah dibuat</p>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Dokumen Terbaru</CardTitle>
+        <Card className="shadow-lg border-0 bg-white hover:shadow-xl transition-shadow">
+          <CardHeader className="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-t-lg">
+            <div className="flex items-center gap-3">
+              <Upload className="w-6 h-6" />
+              <CardTitle className="text-xl">Dokumen Terbaru</CardTitle>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             {program.dokumenPenting.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {program.dokumenPenting.slice(0, 5).map((dokumen) => (
-                  <div key={dokumen.id} className="flex justify-between items-center">
-                    <div>
-                      <p className="text-sm font-medium">{dokumen.namaDokumen}</p>
-                      <p className="text-xs text-muted-foreground">{dokumen.tipeDokumen}</p>
+                  <div key={dokumen.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-900 truncate">{dokumen.namaDokumen}</p>
+                      <p className="text-sm text-gray-600">{dokumen.tipeDokumen}</p>
                     </div>
                   </div>
                 ))}
                 <Link href={`/dashboard/programs/${id}/documents`}>
-                  <Button variant="outline" size="sm" className="w-full mt-3">
+                  <Button variant="outline" size="sm" className="w-full mt-4 border-purple-200 text-purple-600 hover:bg-purple-50">
                     Lihat Semua Dokumen
                   </Button>
                 </Link>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Belum ada dokumen</p>
+              <div className="text-center py-8">
+                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Upload className="w-6 h-6 text-gray-400" />
+                </div>
+                <p className="text-gray-600">Belum ada dokumen</p>
+                <p className="text-sm text-gray-500 mt-1">Dokumen akan muncul di sini setelah diupload</p>
+              </div>
             )}
           </CardContent>
         </Card>

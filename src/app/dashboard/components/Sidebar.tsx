@@ -9,13 +9,11 @@ import {
   LayoutDashboard,
   Rocket,
   User,
-  Eye,
   ClipboardList,
   Upload,
   BarChartBig,
   Menu,
   X,
-  Zap,
   BookOpenText,
   Users,
   Settings
@@ -29,10 +27,7 @@ export function Sidebar() {
   const [userProgramId, setUserProgramId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Extract program ID from pathname if on program pages
-  const programMatch = pathname.match(/\/dashboard\/programs\/([^\/]+)/);
-  const programId = programMatch ? programMatch[1] : null;
-  const isOnProgramPage = programId !== null;
+  // Removed program submenu logic - keeping sidebar clean
 
   // Fetch user's program ID for USER role
   useEffect(() => {
@@ -144,34 +139,7 @@ export function Sidebar() {
       });
     }
 
-    // Add program submenu for admin if on program page
-    if (isOnProgramPage && programId && session?.user?.role === 'ADMIN') {
-      const programMenuItems = [
-        {
-          name: 'Detail Program',
-          href: `/dashboard/programs/${programId}`,
-          icon: Eye,
-          isSubMenu: true,
-          description: 'Informasi detail program'
-        },
-        {
-          name: 'Riwayat Laporan',
-          href: `/dashboard/programs/${programId}/reports`,
-          icon: ClipboardList,
-          isSubMenu: true,
-          description: 'Laporan program ini'
-        },
-        {
-          name: 'Manajemen Dokumen',
-          href: `/dashboard/programs/${programId}/documents`,
-          icon: Upload,
-          isSubMenu: true,
-          description: 'Dokumen program ini'
-        },
-      ];
-
-      return [...baseMenuItems, ...programMenuItems];
-    }
+    // Removed program submenu to keep sidebar clean
 
     return baseMenuItems;
   };
@@ -183,12 +151,18 @@ export function Sidebar() {
       {/* Header */}
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="relative w-9 h-9 bg-white rounded-lg flex items-center justify-center">
-            <Zap className="h-5 w-5 text-[#1E40AF]" />
+          <div className="relative w-9 h-9 bg-white rounded-lg flex items-center justify-center p-1">
+            <Image
+              src="/PLN.png"
+              alt="PLN Logo"
+              width={32}
+              height={32}
+              className="object-contain"
+            />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">PLN Platform</h1>
-            <p className="text-xs text-blue-100">UIP Kota Makassar</p>
+            <h1 className="text-lg font-bold text-white">SIM CSR</h1>
+            <p className="text-xs text-blue-100">PLN UIP Kota Makassar</p>
           </div>
         </div>
       </div>
@@ -198,7 +172,6 @@ export function Sidebar() {
         {menuItems.map((item) => {
           const IconComponent = item.icon;
           const isActive = pathname === item.href;
-          const isSubMenu = (item as any).isSubMenu || false;
           
           return (
             <Link
@@ -209,7 +182,6 @@ export function Sidebar() {
                   ? 'bg-white/20 text-white shadow-lg backdrop-blur-sm border border-white/20'
                   : 'text-blue-100 hover:text-white'
                 }
-                ${isSubMenu ? 'ml-3 border-l-2 border-white/20 pl-4' : ''}
               `}
             >
               <div className={`p-1.5 rounded-md transition-colors ${
@@ -217,13 +189,13 @@ export function Sidebar() {
                   ? 'bg-white/20'
                   : 'bg-white/10 group-hover:bg-white/20'
               }`}>
-                <IconComponent className={`${isSubMenu ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
+                <IconComponent className="h-4 w-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className={`font-medium ${isSubMenu ? 'text-xs' : 'text-sm'}`}>
+                <p className="font-medium text-sm">
                   {item.name}
                 </p>
-                {!isSubMenu && (item as any).description && (
+                {(item as any).description && (
                   <p className="text-xs text-blue-200 mt-0.5 truncate opacity-80">
                     {(item as any).description}
                   </p>

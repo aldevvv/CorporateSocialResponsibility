@@ -73,9 +73,11 @@ export function ManajemenDokumen({ programId, userId, dokumen }: ManajemenDokume
         <ul className="mt-2 space-y-2">
           {dokumen.map(doc => (
             <li key={doc.id} className="flex justify-between items-center p-2 border rounded-md">
-              <a 
-                href={`/api/documents/${doc.id}`} 
+              <a
+                href={doc.urlDokumen || `/api/documents/${doc.id}`}
                 download={doc.namaDokumen}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-600 hover:underline"
               >
                 {doc.namaDokumen}

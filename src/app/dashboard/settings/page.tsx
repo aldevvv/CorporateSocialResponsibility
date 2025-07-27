@@ -10,9 +10,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Label } from '@/components/ui/label';
 
 // Skema Zod yang lengkap
 const formSchema = z.object({
@@ -33,8 +31,6 @@ const formSchema = z.object({
 
 export default function SettingsPage() {
   const { data: session, status, update: updateSession } = useSession();
-  const [newImageFile, setNewImageFile] = useState<File | null>(null); // Simpan file, bukan Base64
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // Untuk preview
   const [isSaving, setIsSaving] = useState(false);
   const [serverError, setServerError] = useState('');
 
@@ -55,14 +51,6 @@ export default function SettingsPage() {
     }
   }, [session, form]);
 
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setNewImageFile(file); // Simpan object File
-      setImagePreview(URL.createObjectURL(file)); // Buat URL sementara untuk preview
-    }
-  };
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSaving(true);
     setServerError('');
@@ -73,28 +61,8 @@ export default function SettingsPage() {
         return;
     }
 
-    let finalImageUrl = session?.user?.image || null;
-
     try {
-      // Langkah 1: Jika ada foto profil baru, upload dulu
-      if (newImageFile) {
-        const formData = new FormData();
-        formData.append('file', newImageFile);
-        
-        const avatarRes = await fetch('/api/account/avatar', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!avatarRes.ok) {
-          const avatarError = await avatarRes.json();
-          throw new Error(avatarError.error || "Gagal upload avatar");
-        }
-        const avatarData = await avatarRes.json();
-        finalImageUrl = avatarData.url; // Dapatkan URL baru dari server
-      }
-
-      // Langkah 2: Kirim data teks (nama, email, password)
+      // Kirim data teks (nama, email, password)
       const accountRes = await fetch('/api/account', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -111,20 +79,17 @@ export default function SettingsPage() {
         throw new Error(result.error || "Gagal menyimpan data akun");
       }
 
-      // Langkah 3: Perbarui sesi dengan data terbaru
-      await updateSession({ 
-        user: { 
-          ...session?.user, 
+      // Perbarui sesi dengan data terbaru
+      await updateSession({
+        user: {
+          ...session?.user,
           name: values.name,
           email: values.email,
-          image: finalImageUrl,
-        } 
+        }
       });
       
       alert("Pengaturan berhasil disimpan!");
       form.reset({ ...values, currentPassword: '', newPassword: '' });
-      setNewImageFile(null);
-      setImagePreview(null);
 
     } catch (error) {
       setServerError((error as Error).message);
@@ -147,18 +112,6 @@ export default function SettingsPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           
-          <div className="flex items-center gap-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={imagePreview || session.user?.image || ''} alt={session.user?.name || ''} />
-              <AvatarFallback>{session.user?.name?.[0].toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className='w-full space-y-2'>
-              <Label htmlFor="picture">Foto Profil</Label>
-              <Input id="picture" type="file" accept="image/*" onChange={handleImageChange} />
-              <p className="text-sm text-gray-500">Maksimal 5MB. Format: JPEG, PNG, WebP</p>
-            </div>
-          </div>
-
           <FormField
             control={form.control}
             name="name"

@@ -3,6 +3,7 @@ import { ReactNode } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import AuthProvider from './components/AuthProvider'; // Wrapper untuk session provider
+import AiChatbot from './components/AiChatbot';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -17,6 +18,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
           </main>
         </div>
+        {/* AI Chatbot Popup - Available on all dashboard pages */}
+        <AiChatbot />
       </div>
     </AuthProvider>
   );
