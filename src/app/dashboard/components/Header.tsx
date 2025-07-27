@@ -29,29 +29,15 @@ export function Header() {
     [user?.name]
   );
 
-  // Memoize logout handler with proper production URL
+  // Memoize logout handler
   const handleLogout = useCallback(() => {
-    const baseUrl = process.env.NEXTAUTH_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-    signOut({
-      callbackUrl: `${baseUrl}/login`,
-      redirect: true
-    });
+    signOut({ callbackUrl: '/login' });
   }, []);
 
-  // Show loading state while session is loading
-  if (status === 'loading') {
-    return (
-      <header className="sticky top-0 z-30 flex items-center justify-between h-16 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] backdrop-blur-md border-b border-white/10 px-4 lg:px-6 shadow-lg">
-        <div className="flex items-center gap-4">
-          <div className="lg:hidden w-16"></div>
-        </div>
-        <div className="flex items-center gap-2 lg:gap-4">
-          <div className="w-10 h-10 bg-white/10 rounded-full animate-pulse"></div>
-          <div className="w-24 h-8 bg-white/10 rounded animate-pulse"></div>
-        </div>
-      </header>
-    );
-  }
+  // Show header immediately with fallback data
+  const displayName = user?.name || 'User';
+  const displayRole = user?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program';
+  const displayEmail = user?.email || '';
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 bg-gradient-to-r from-[#1E40AF] to-[#1E3A8A] backdrop-blur-md border-b border-white/10 px-4 lg:px-6 shadow-lg">
@@ -76,10 +62,8 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative flex items-center gap-2 p-2 h-auto hover:bg-white/10 rounded-xl text-white">
               <div className="hidden sm:block text-right">
-                <p className="text-sm font-medium text-white">{user?.name}</p>
-                <p className="text-xs text-blue-100">
-                  {(user as { role: string })?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program'}
-                </p>
+                <p className="text-sm font-medium text-white">{displayName}</p>
+                <p className="text-xs text-blue-100">{displayRole}</p>
               </div>
               <Avatar className="h-9 w-9 ring-2 ring-white/20">
                 <AvatarFallback className="bg-gradient-to-br from-white to-blue-100 text-[#1E40AF] font-semibold">
@@ -97,11 +81,9 @@ export function Header() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-gray-900">{user?.name}</p>
-                  <p className="text-sm text-gray-500">{user?.email}</p>
-                  <p className="text-xs text-[#1E40AF] font-medium">
-                    {(user as { role: string })?.role === 'ADMIN' ? 'Administrator' : 'Pelaksana Program'}
-                  </p>
+                  <p className="font-medium text-gray-900">{displayName}</p>
+                  <p className="text-sm text-gray-500">{displayEmail}</p>
+                  <p className="text-xs text-[#1E40AF] font-medium">{displayRole}</p>
                 </div>
               </div>
             </DropdownMenuLabel>

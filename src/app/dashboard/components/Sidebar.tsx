@@ -85,104 +85,100 @@ export function Sidebar() {
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Memoized menu items based on user role - show immediately without waiting for API
+  // Show all menus immediately - don't wait for session loading
   const menuItems = useMemo(() => {
-    if (status === 'loading') return []; // Return empty array while loading
-    
-    const baseMenuItems = [];
-    
-    if (user?.role === 'ADMIN') {
-      baseMenuItems.push(
-        {
-          name: 'Overview',
-          href: '/dashboard/overview',
-          icon: LayoutDashboard,
-          description: 'Ringkasan data'
-        },
-        {
-          name: 'Manajemen Proposal',
-          href: '/dashboard/proposals',
-          icon: FileText,
-          description: 'Kelola proposal CSR'
-        },
-        {
-          name: 'Program Berjalan',
-          href: '/dashboard/programs',
-          icon: Rocket,
-          description: 'Monitor program aktif'
-        },
-        {
-          name: 'Insights',
-          href: '/dashboard/insights',
-          icon: BarChartBig,
-          description: 'Analitik & laporan'
-        },
-        {
-          name: 'Users',
-          href: '/dashboard/users',
-          icon: Users,
-          description: 'Kelola pengguna sistem'
-        },
-        {
-          name: 'AI Settings',
-          href: '/dashboard/ai-settings',
-          icon: Settings,
-          description: 'Kelola API Key & Prompt AI'
-        },
-        {
-          name: 'Panduan',
-          href: '/dashboard/guides',
-          icon: BookOpenText,
-          description: 'Panduan penggunaan sistem'
-        }
-      );
-    } else if (user?.role === 'USER') {
-      // Show USER menu immediately - don't wait for API call
-      baseMenuItems.push(
-        {
-          name: 'Program Saya',
-          href: '/dashboard/my-programs',
-          icon: User,
-          description: 'Program yang saya kelola'
-        },
-        {
-          name: 'Riwayat Laporan',
-          // Use fallback URL first, will be updated when userProgramId is available
-          href: userProgramId ? `/dashboard/programs/${userProgramId}/reports` : '/dashboard/reports',
-          icon: ClipboardList,
-          description: 'Laporan yang telah dibuat'
-        },
-        {
-          name: 'Buat Laporan',
-          // Use fallback URL first, will be updated when userProgramId is available
-          href: userProgramId ? `/dashboard/programs/${userProgramId}/create-report` : '/dashboard/create-report',
-          icon: FileText,
-          description: 'Buat laporan baru'
-        },
-        {
-          name: 'Manajemen Dokumen',
-          // Use fallback URL first, will be updated when userProgramId is available
-          href: userProgramId ? `/dashboard/programs/${userProgramId}/documents` : '/dashboard/documents',
-          icon: Upload,
-          description: 'Kelola dokumen program'
-        },
-        {
-          name: 'Panduan',
-          href: '/dashboard/guides',
-          icon: BookOpenText,
-          description: 'Panduan penggunaan sistem'
-        }
-      );
-    } else {
-      baseMenuItems.push({
-        name: 'Dashboard',
-        href: '/dashboard',
+    // Default menu items - show immediately
+    const defaultMenuItems = [
+      {
+        name: 'Program Saya',
+        href: '/dashboard/my-programs',
+        icon: User,
+        description: 'Program yang saya kelola'
+      },
+      {
+        name: 'Riwayat Laporan',
+        href: userProgramId ? `/dashboard/programs/${userProgramId}/reports` : '/dashboard/reports',
+        icon: ClipboardList,
+        description: 'Laporan yang telah dibuat'
+      },
+      {
+        name: 'Buat Laporan',
+        href: userProgramId ? `/dashboard/programs/${userProgramId}/create-report` : '/dashboard/create-report',
+        icon: FileText,
+        description: 'Buat laporan baru'
+      },
+      {
+        name: 'Manajemen Dokumen',
+        href: userProgramId ? `/dashboard/programs/${userProgramId}/documents` : '/dashboard/documents',
+        icon: Upload,
+        description: 'Kelola dokumen program'
+      },
+      {
+        name: 'Panduan',
+        href: '/dashboard/guides',
+        icon: BookOpenText,
+        description: 'Panduan penggunaan sistem'
+      }
+    ];
+
+    // Admin-only menu items
+    const adminMenuItems = [
+      {
+        name: 'Overview',
+        href: '/dashboard/overview',
         icon: LayoutDashboard,
-        description: 'Overview sistem'
-      });
+        description: 'Ringkasan data'
+      },
+      {
+        name: 'Manajemen Proposal',
+        href: '/dashboard/proposals',
+        icon: FileText,
+        description: 'Kelola proposal CSR'
+      },
+      {
+        name: 'Program Berjalan',
+        href: '/dashboard/programs',
+        icon: Rocket,
+        description: 'Monitor program aktif'
+      },
+      {
+        name: 'Insights',
+        href: '/dashboard/insights',
+        icon: BarChartBig,
+        description: 'Analitik & laporan'
+      },
+      {
+        name: 'Users',
+        href: '/dashboard/users',
+        icon: Users,
+        description: 'Kelola pengguna sistem'
+      },
+      {
+        name: 'AI Settings',
+        href: '/dashboard/ai-settings',
+        icon: Settings,
+        description: 'Kelola API Key & Prompt AI'
+      },
+      {
+        name: 'Panduan',
+        href: '/dashboard/guides',
+        icon: BookOpenText,
+        description: 'Panduan penggunaan sistem'
+      }
+    ];
+
+    // Show appropriate menu based on role, or default menu if still loading
+    if (status === 'loading' || !user?.role) {
+      return defaultMenuItems; // Show default menu while loading
+    }
+    
+    if (user.role === 'ADMIN') {
+      return adminMenuItems;
+    } else if (user.role === 'USER') {
+      return defaultMenuItems.filter(item => item.name !== 'Dashboard'); // Remove Dashboard for USER
     }
 
-    return baseMenuItems;
+    return defaultMenuItems;
   }, [user?.role, userProgramId, status]);
 
   // Memoized mobile menu toggle

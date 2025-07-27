@@ -1,14 +1,20 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
 import { compare } from 'bcryptjs'
 
-const prisma = new PrismaClient()
+// Use singleton pattern for Prisma client
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
   session: {
     strategy: 'jwt' as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
     CredentialsProvider({
@@ -98,16 +104,6 @@ export const authOptions = {
   },
   pages: {
     signIn: '/login',
-    signOut: '/login',
-  },
-  events: {
-    signOut: async () => {
-      // Force redirect to production domain
-      if (typeof window !== 'undefined') {
-        const baseUrl = process.env.NEXTAUTH_URL || window.location.origin;
-        window.location.href = `${baseUrl}/login`;
-      }
-    }
   },
   debug: process.env.NODE_ENV === 'development',
 }
