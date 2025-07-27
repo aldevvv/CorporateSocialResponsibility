@@ -37,8 +37,8 @@ export async function POST(
     }
 
     // Generate PDF using TorDocument component
-    const torDocumentElement = React.createElement(TorDocument, { proposal }) as any;
-    const pdfBuffer = await renderToBuffer(torDocumentElement);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pdfBuffer = await renderToBuffer(React.createElement(TorDocument, { proposal }) as any);
 
     // Return PDF as downloadable file
     return new NextResponse(pdfBuffer, {
