@@ -31,8 +31,8 @@ export function Sidebar() {
 
   // Fetch user's program ID for USER role
   useEffect(() => {
-    if (session?.user?.role === 'USER' && session.user.id) {
-      fetch(`/api/user-program/${session.user.id}`)
+    if ((session?.user as { role: string; id: string })?.role === 'USER' && (session?.user as { id: string })?.id) {
+      fetch(`/api/user-program/${(session?.user as { id: string })?.id}`)
         .then(res => res.json())
         .then(data => {
           if (data.programId) {
@@ -52,7 +52,7 @@ export function Sidebar() {
   const getMenuItems = () => {
     const baseMenuItems = [];
     
-    if (session?.user?.role === 'ADMIN') {
+    if ((session?.user as { role: string })?.role === 'ADMIN') {
       baseMenuItems.push(
         {
           name: 'Overview',
@@ -97,7 +97,7 @@ export function Sidebar() {
           description: 'Panduan penggunaan sistem'
         }
       );
-    } else if (session?.user?.role === 'USER') {
+    } else if ((session?.user as { role: string })?.role === 'USER') {
       baseMenuItems.push(
         {
           name: 'Program Saya',
