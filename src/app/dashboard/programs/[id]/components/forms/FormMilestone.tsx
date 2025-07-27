@@ -18,7 +18,7 @@ const formSchema = z.object({
   deskripsiPencapaian: z.string().min(10, "Deskripsi pencapaian minimal 10 karakter."),
   persentaseSelesai: z.coerce.number().min(0).max(100, "Persentase harus antara 0 dan 100."),
   statusMilestone: z.enum(['tercapai', 'terlambat', 'dalam_progres'], {
-    required_error: "Status milestone harus dipilih.",
+    message: "Status milestone harus dipilih.",
   }),
   tanggalTarget: z.string().min(1, "Tanggal target harus diisi."),
   tanggalRealisasi: z.string().optional(),

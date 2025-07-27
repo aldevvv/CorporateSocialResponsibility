@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils';
 // Skema Zod yang lengkap
 const formSchema = z.object({
   judul: z.string().min(10, { message: 'Judul minimal 10 karakter.' }),
-  pilar: z.nativeEnum(TjslPillar, { required_error: 'Pilar TJSL harus dipilih.' }),
+  pilar: z.nativeEnum(TjslPillar, { message: 'Pilar TJSL harus dipilih.' }),
   ringkasan: z.string().optional(),
   lokasiKabupaten: z.string().min(3, { message: 'Lokasi kabupaten wajib diisi.' }),
   lokasiKecamatan: z.string().min(3, { message: 'Lokasi kecamatan wajib diisi.' }),
@@ -41,8 +41,8 @@ const formSchema = z.object({
   targetPenerimaManfaat: z.string().min(10, { message: 'Target penerima manfaat wajib diisi.' }),
   jumlahPenerimaManfaat: z.coerce.number().int().positive({ message: 'Jumlah harus angka positif.' }),
   estimasiAnggaran: z.coerce.number().positive({ message: 'Anggaran harus angka positif.' }),
-  perkiraanMulai: z.date({ required_error: 'Tanggal mulai wajib diisi.' }),
-  perkiraanSelesai: z.date({ required_error: 'Tanggal selesai wajib diisi.' }),
+  perkiraanMulai: z.date({ message: 'Tanggal mulai wajib diisi.' }),
+  perkiraanSelesai: z.date({ message: 'Tanggal selesai wajib diisi.' }),
 }).refine((data) => data.perkiraanSelesai > data.perkiraanMulai, {
   message: "Tanggal selesai harus setelah tanggal mulai",
   path: ["perkiraanSelesai"],
@@ -60,9 +60,18 @@ export function ProposalForm({ initialData }: ProposalFormProps) {
     resolver: zodResolver(formSchema),
     defaultValues: isEditMode
       ? {
-          ...initialData,
-          estimasiAnggaran: Number(initialData.estimasiAnggaran), // Konversi Decimal ke number
+          judul: initialData.judul,
+          pilar: initialData.pilar,
+          ringkasan: initialData.ringkasan || '',
+          lokasiKabupaten: initialData.lokasiKabupaten,
+          lokasiKecamatan: initialData.lokasiKecamatan,
+          lokasiDesa: initialData.lokasiDesa || '',
+          latarBelakang: initialData.latarBelakang,
+          tujuanProgram: initialData.tujuanProgram,
+          indikatorKeberhasilan: initialData.indikatorKeberhasilan,
+          targetPenerimaManfaat: initialData.targetPenerimaManfaat,
           jumlahPenerimaManfaat: initialData.jumlahPenerimaManfaat,
+          estimasiAnggaran: Number(initialData.estimasiAnggaran),
           perkiraanMulai: new Date(initialData.perkiraanMulai),
           perkiraanSelesai: new Date(initialData.perkiraanSelesai),
         }

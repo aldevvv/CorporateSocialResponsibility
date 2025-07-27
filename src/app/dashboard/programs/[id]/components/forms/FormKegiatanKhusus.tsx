@@ -17,7 +17,7 @@ const formSchema = z.object({
   namaKegiatan: z.string().min(5, "Nama kegiatan minimal 5 karakter."),
   deskripsiKegiatan: z.string().min(10, "Deskripsi kegiatan minimal 10 karakter."),
   tipeKegiatan: z.enum(['workshop', 'sosialisasi', 'monitoring', 'evaluasi', 'lainnya'], {
-    required_error: "Tipe kegiatan harus dipilih.",
+    message: "Tipe kegiatan harus dipilih.",
   }),
   lokasiKegiatan: z.string().min(3, "Lokasi kegiatan minimal 3 karakter."),
   jumlahPeserta: z.coerce.number().min(1, "Jumlah peserta minimal 1."),

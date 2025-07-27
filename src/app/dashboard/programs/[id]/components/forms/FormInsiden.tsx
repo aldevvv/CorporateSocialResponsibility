@@ -17,12 +17,12 @@ const formSchema = z.object({
   judulInsiden: z.string().min(5, "Judul insiden minimal 5 karakter."),
   deskripsiMasalah: z.string().min(10, "Deskripsi masalah minimal 10 karakter."),
   tingkatKeparahan: z.enum(['rendah', 'sedang', 'tinggi', 'kritis'], {
-    required_error: "Tingkat keparahan harus dipilih.",
+    message: "Tingkat keparahan harus dipilih.",
   }),
   dampakProgram: z.string().min(10, "Dampak terhadap program minimal 10 karakter."),
   tindakanDilakukan: z.string().min(10, "Tindakan yang dilakukan minimal 10 karakter."),
   statusPenyelesaian: z.enum(['baru', 'dalam_penanganan', 'selesai'], {
-    required_error: "Status penyelesaian harus dipilih.",
+    message: "Status penyelesaian harus dipilih.",
   }),
   tanggalKejadian: z.string().min(1, "Tanggal kejadian harus diisi."),
   estimasiSelesai: z.string().optional(),

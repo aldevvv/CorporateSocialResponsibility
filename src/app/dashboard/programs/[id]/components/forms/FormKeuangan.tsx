@@ -17,7 +17,7 @@ const formSchema = z.object({
   deskripsiTransaksi: z.string().min(10, "Deskripsi transaksi minimal 10 karakter."),
   jumlah: z.coerce.number().min(1, "Jumlah harus lebih dari 0."),
   tipe: z.enum(['pemasukan', 'pengeluaran'], {
-    required_error: "Tipe transaksi harus dipilih.",
+    message: "Tipe transaksi harus dipilih.",
   }),
   urlBukti: z.string().optional(),
 });
