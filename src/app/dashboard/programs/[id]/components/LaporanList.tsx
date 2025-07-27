@@ -200,7 +200,7 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
       case 'PROGRES_RUTIN':
         return (
           <div className="space-y-2 text-sm">
-            <p><strong>Periode:</strong> {data.periode}</p>
+            <p><strong>Periode:</strong> {data.periode instanceof Date ? data.periode.toLocaleDateString('id-ID') : data.periode}</p>
             <p><strong>Aktivitas:</strong> {data.aktivitas}</p>
             <p><strong>Progres:</strong> {data.progres}</p>
             {data.kendala && <p><strong>Kendala:</strong> {data.kendala}</p>}
@@ -221,7 +221,7 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
       case 'KEUANGAN':
         return (
           <div className="space-y-2 text-sm">
-            <p><strong>Periode:</strong> {data.periode}</p>
+            <p><strong>Periode:</strong> {data.periode instanceof Date ? data.periode.toLocaleDateString('id-ID') : data.periode}</p>
             <p><strong>Anggaran Terpakai:</strong> {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(data.anggaranTerpakai))}</p>
             <p><strong>Sisa Anggaran:</strong> {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(data.sisaAnggaran))}</p>
             <p><strong>Rincian Pengeluaran:</strong> {data.rincianPengeluaran}</p>
