@@ -1,7 +1,7 @@
 // app/api/users/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
@@ -10,16 +10,16 @@ const prisma = new PrismaClient();
 // PUT - Update user (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user: { role: string; id: string } } | null;
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { name, email, password, role } = body;
 
@@ -47,13 +47,13 @@ export async function PUT(
     const updateData: {
       name?: string | null;
       email?: string;
-      role?: string;
+      role?: 'ADMIN' | 'USER';
       password?: string;
     } = {};
     
     if (name !== undefined) updateData.name = name || null;
     if (email) updateData.email = email;
-    if (role) updateData.role = role;
+    if (role) updateData.role = role as 'ADMIN' | 'USER';
     
     // Hash password if provided
     if (password) {
@@ -84,16 +84,16 @@ export async function PUT(
 // DELETE - Delete user (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user: { role: string; id: string } } | null;
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -124,16 +124,16 @@ export async function DELETE(
 // GET - Get single user (Admin only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user: { role: string } } | null;
     
     if (!session || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     const user = await prisma.user.findUnique({
       where: { id },
