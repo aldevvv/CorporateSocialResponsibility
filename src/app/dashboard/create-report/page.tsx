@@ -8,14 +8,14 @@ const prisma = new PrismaClient();
 
 export default async function CreateReportPage() {
   const session = await getServerSession(authOptions);
-  if (!session?.user) {
+  if (!session || !(session as { user: { id: string } }).user) {
     redirect('/login');
   }
 
   // Check if user has a program assigned
   const program = await prisma.program.findFirst({
     where: {
-      penanggungJawabId: session.user.id,
+      penanggungJawabId: (session as { user: { id: string } }).user.id,
     },
   });
 
