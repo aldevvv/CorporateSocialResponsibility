@@ -1,24 +1,25 @@
 // app/api/programs/[id]/route.ts
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { user: { role: string } } | null;
   if (!session || session.user.role !== 'ADMIN') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
+    const { id } = await params;
     const body = await request.json();
     const updatedProgram = await prisma.program.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: body.status,
       },
