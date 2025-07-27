@@ -201,20 +201,20 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
         return (
           <div className="space-y-2 text-sm">
             <p><strong>Periode:</strong> {data.periode instanceof Date ? data.periode.toLocaleDateString('id-ID') : data.periode}</p>
-            <p><strong>Aktivitas:</strong> {data.aktivitas}</p>
-            <p><strong>Progres:</strong> {data.progres}</p>
-            {data.kendala && <p><strong>Kendala:</strong> {data.kendala}</p>}
-            <p><strong>Rencana Selanjutnya:</strong> {data.rencanaSelanjutnya}</p>
+            <p><strong>Aktivitas:</strong> {data.aktivitas instanceof Date ? data.aktivitas.toLocaleDateString('id-ID') : data.aktivitas}</p>
+            <p><strong>Progres:</strong> {data.progres instanceof Date ? data.progres.toLocaleDateString('id-ID') : data.progres}</p>
+            {data.kendala && <p><strong>Kendala:</strong> {data.kendala instanceof Date ? data.kendala.toLocaleDateString('id-ID') : data.kendala}</p>}
+            <p><strong>Rencana Selanjutnya:</strong> {data.rencanaSelanjutnya instanceof Date ? data.rencanaSelanjutnya.toLocaleDateString('id-ID') : data.rencanaSelanjutnya}</p>
           </div>
         );
 
       case 'PENCAPAIAN_MILESTONE':
         return (
           <div className="space-y-2 text-sm">
-            <p><strong>Milestone:</strong> {data.milestone}</p>
+            <p><strong>Milestone:</strong> {data.milestone instanceof Date ? data.milestone.toLocaleDateString('id-ID') : data.milestone}</p>
             <p><strong>Tanggal Pencapaian:</strong> {new Date(data.tanggalCapai).toLocaleDateString('id-ID')}</p>
-            <p><strong>Deskripsi:</strong> {data.deskripsi}</p>
-            {data.bukti && <p><strong>Bukti:</strong> {data.bukti}</p>}
+            <p><strong>Deskripsi:</strong> {data.deskripsi instanceof Date ? data.deskripsi.toLocaleDateString('id-ID') : data.deskripsi}</p>
+            {data.bukti && <p><strong>Bukti:</strong> {data.bukti instanceof Date ? data.bukti.toLocaleDateString('id-ID') : data.bukti}</p>}
           </div>
         );
 
@@ -224,7 +224,7 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
             <p><strong>Periode:</strong> {data.periode instanceof Date ? data.periode.toLocaleDateString('id-ID') : data.periode}</p>
             <p><strong>Anggaran Terpakai:</strong> {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(data.anggaranTerpakai))}</p>
             <p><strong>Sisa Anggaran:</strong> {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(data.sisaAnggaran))}</p>
-            <p><strong>Rincian Pengeluaran:</strong> {data.rincianPengeluaran}</p>
+            <p><strong>Rincian Pengeluaran:</strong> {data.rincianPengeluaran instanceof Date ? data.rincianPengeluaran.toLocaleDateString('id-ID') : data.rincianPengeluaran}</p>
           </div>
         );
 
@@ -232,21 +232,21 @@ export function LaporanList({ programId, initialReports = [], initialPagination 
         return (
           <div className="space-y-2 text-sm">
             <p><strong>Tanggal Kejadian:</strong> {new Date(data.tanggalKejadian).toLocaleDateString('id-ID')}</p>
-            <p><strong>Jenis Insiden:</strong> {data.jenisInsiden}</p>
-            <p><strong>Deskripsi:</strong> {data.deskripsi}</p>
-            <p><strong>Dampak:</strong> {data.dampak}</p>
-            <p><strong>Tindakan yang Diambil:</strong> {data.tindakanDiambil}</p>
+            <p><strong>Jenis Insiden:</strong> {data.jenisInsiden instanceof Date ? data.jenisInsiden.toLocaleDateString('id-ID') : data.jenisInsiden}</p>
+            <p><strong>Deskripsi:</strong> {data.deskripsi instanceof Date ? data.deskripsi.toLocaleDateString('id-ID') : data.deskripsi}</p>
+            <p><strong>Dampak:</strong> {data.dampak instanceof Date ? data.dampak.toLocaleDateString('id-ID') : data.dampak}</p>
+            <p><strong>Tindakan yang Diambil:</strong> {data.tindakanDiambil instanceof Date ? data.tindakanDiambil.toLocaleDateString('id-ID') : data.tindakanDiambil}</p>
           </div>
         );
 
       case 'KEGIATAN_KHUSUS':
         return (
           <div className="space-y-2 text-sm">
-            <p><strong>Nama Kegiatan:</strong> {data.namaKegiatan}</p>
+            <p><strong>Nama Kegiatan:</strong> {data.namaKegiatan instanceof Date ? data.namaKegiatan.toLocaleDateString('id-ID') : data.namaKegiatan}</p>
             <p><strong>Tanggal:</strong> {new Date(data.tanggal).toLocaleDateString('id-ID')}</p>
-            <p><strong>Jumlah Peserta:</strong> {data.peserta}</p>
-            <p><strong>Deskripsi:</strong> {data.deskripsi}</p>
-            <p><strong>Hasil:</strong> {data.hasil}</p>
+            <p><strong>Jumlah Peserta:</strong> {data.peserta instanceof Date ? data.peserta.toLocaleDateString('id-ID') : data.peserta}</p>
+            <p><strong>Deskripsi:</strong> {data.deskripsi instanceof Date ? data.deskripsi.toLocaleDateString('id-ID') : data.deskripsi}</p>
+            <p><strong>Hasil:</strong> {data.hasil instanceof Date ? data.hasil.toLocaleDateString('id-ID') : data.hasil}</p>
           </div>
         );
 
