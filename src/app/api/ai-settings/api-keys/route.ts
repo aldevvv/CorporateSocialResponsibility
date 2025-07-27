@@ -131,7 +131,7 @@ async function detectModels(provider: string, apiKey: string, baseUrl?: string):
 // GET - Fetch all API keys
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role: string; name?: string; email?: string } } | null;
     
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -180,7 +180,7 @@ export async function GET() {
 // POST - Create new API key
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role: string; name?: string; email?: string } } | null;
     
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -258,7 +258,7 @@ export async function POST(request: NextRequest) {
 // PUT - Update API key
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role: string; name?: string; email?: string } } | null;
     
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -346,7 +346,7 @@ export async function PUT(request: NextRequest) {
 // DELETE - Delete API key
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions) as { user?: { id: string; role: string; name?: string; email?: string } } | null;
     
     if (!session?.user || session.user.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
