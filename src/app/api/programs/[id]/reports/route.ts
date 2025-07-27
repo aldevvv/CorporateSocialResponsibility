@@ -49,7 +49,7 @@ export async function GET(
     // Build where clause for filtering
     const whereClause: {
       programId: string;
-      tipeLaporan?: string;
+      tipeLaporan?: 'PROGRES_RUTIN' | 'PENCAPAIAN_MILESTONE' | 'KEUANGAN' | 'INSIDEN_KENDALA' | 'KEGIATAN_KHUSUS';
       OR?: Array<{
         createdBy?: {
           name?: {
@@ -63,7 +63,7 @@ export async function GET(
     };
 
     if (type && type !== 'all') {
-      whereClause.tipeLaporan = type;
+      whereClause.tipeLaporan = type as 'PROGRES_RUTIN' | 'PENCAPAIAN_MILESTONE' | 'KEUANGAN' | 'INSIDEN_KENDALA' | 'KEGIATAN_KHUSUS';
     }
 
     if (search) {
